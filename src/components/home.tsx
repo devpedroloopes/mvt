@@ -41,7 +41,7 @@ export default function Home() {
     }
 
     try {
-      const response = await axios.post("https://mvt-n3d1n2mca-pedrohsl2003s-projects.vercel.app/api/send-email", { email });
+      const response = await axios.post("https://mvt-r6okow1b8-pedrohsl2003s-projects.vercel.app/api/send-email", { email });
       if (response.data.success) {
         Alert.alert("Sucesso", "E-mail enviado com sucesso!");
       } else {
