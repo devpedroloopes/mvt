@@ -1,16 +1,13 @@
 import React, { useState, useRef } from "react";
-import { StyleSheet, View, Text, Modal, TouchableOpacity, Alert, Dimensions } from "react-native";
+import { StyleSheet, View, Text, Modal, TouchableOpacity, Alert } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import axios from "axios";
-
-const { width } = Dimensions.get("window");
-const scanAreaSize = width * 0.7;
+import axios from "axios"; 
 
 export default function Home() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
-  const [email, setEmail] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null); 
   const qrCodeLock = useRef(false);
 
   async function handleOpenCamera() {
@@ -35,8 +32,7 @@ export default function Home() {
     if (!email) return;
 
     try {
-      // Conectar ao servidor no Render
-      const response = await axios.post('https://mvt-l13v.onrender.com/send-email', { email });
+      const response = await axios.post('http://192.168.0.234:3000/send-email', { email });
       if (response.data.success) {
         Alert.alert("Sucesso", "E-mail enviado com sucesso!");
       } else {
@@ -50,44 +46,37 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Escaneie o QR Code</Text>
-      <Text style={styles.subtitle}>Aponte a câmera para o QR Code</Text>
+      <Text style={styles.subtitle}>Posicione o QR Code dentro da área abaixo</Text>
 
       <TouchableOpacity style={styles.startButton} onPress={handleOpenCamera}>
-        <MaterialCommunityIcons name="qrcode-scan" size={24} color="#fff" />
         <Text style={styles.startButtonText}>Iniciar Leitura</Text>
       </TouchableOpacity>
 
       <Modal visible={modalIsVisible} transparent={true}>
         <View style={styles.overlay}>
-          <Text style={styles.scanText}>Posicione o QR Code dentro do marcador</Text>
-          <View style={styles.scanContainer}>
-            <CameraView
-              style={styles.camera}
-              facing="back"
-              onBarcodeScanned={({ data }) => {
-                if (data && !qrCodeLock.current) {
-                  qrCodeLock.current = true;
-                  setTimeout(() => handleQRCodeRead(data), 500);
-                }
-              }}
-            />
-            <View style={styles.scanFrame}>
-              <View style={styles.scanMarker} />
-            </View>
-          </View>
+          <CameraView
+            style={styles.camera}
+            facing="back"
+            onBarcodeScanned={({ data }) => {
+              if (data && !qrCodeLock.current) {
+                qrCodeLock.current = true;
+                setTimeout(() => handleQRCodeRead(data), 500);
+              }
+            }}
+          />
           <TouchableOpacity
             style={styles.closeButton}
             onPress={() => setModalIsVisible(false)}
           >
-            <MaterialCommunityIcons name="close" size={30} color="#fff" />
+            <MaterialCommunityIcons name="close" size={30} color="white" />
           </TouchableOpacity>
         </View>
       </Modal>
 
       {email && (
-        <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
-          <Text style={styles.sendButtonText}>Enviar E-mail</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
+            <Text style={styles.sendButtonText}>Enviar E-mail</Text>
+          </TouchableOpacity>
       )}
     </View>
   );
@@ -99,89 +88,74 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#333",
   },
   title: {
     fontSize: 28,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 8,
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 20,
   },
   subtitle: {
     fontSize: 16,
-    color: "#666",
-    marginBottom: 30,
+    color: "#ccc",
+    marginBottom: 40,
     textAlign: "center",
   },
   startButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
     width: "80%",
     padding: 15,
     backgroundColor: "#0078D7",
     borderRadius: 10,
+    alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.5,
     shadowRadius: 5,
   },
   startButtonText: {
     fontSize: 18,
     color: "#fff",
     fontWeight: "bold",
-    marginLeft: 10,
   },
   overlay: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.95)",
-  },
-  scanText: {
-    color: "#fff",
-    fontSize: 18,
-    marginBottom: 20,
-  },
-  scanContainer: {
-    width: "100%",
-    height: "60%",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
   },
   camera: {
-    position: "absolute",
     width: "100%",
     height: "100%",
   },
-  scanFrame: {
-    width: scanAreaSize,
-    height: scanAreaSize,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  scanMarker: {
-    width: scanAreaSize,
-    height: scanAreaSize,
-    borderRadius: 20,
-    borderWidth: 3,
-    borderColor: "#00FF00",
-  },
   closeButton: {
     position: "absolute",
-    top: 30,
+    top: 40,
     right: 20,
+    backgroundColor: "#555",
+    padding: 10,
+    borderRadius: 50,
+  },
+  emailContainer: {
+    marginTop: 20,
+    alignItems: "center",
+    backgroundColor: "#444",
+    padding: 15,
+    borderRadius: 10,
+    width: "90%",
+  },
+  emailText: {
+    fontSize: 16,
+    color: "#ccc",
+    marginBottom: 10,
   },
   sendButton: {
-    marginTop: 20,
-    paddingVertical: 12,
-    paddingHorizontal: 50,
-    backgroundColor: "#0078D7",
+    width: "80%",
+    padding: 15,
+    backgroundColor: "#28A745",
     borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
+    alignItems: "center",
+    marginTop: 10,
   },
   sendButtonText: {
     fontSize: 18,
