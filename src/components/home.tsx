@@ -1,13 +1,20 @@
 import React, { useState, useRef } from "react";
-import { StyleSheet, View, Text, Modal, TouchableOpacity, Alert } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import axios from "axios"; 
+import axios from "axios";
 
 export default function Home() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
-  const [email, setEmail] = useState<string | null>(null); 
+  const [email, setEmail] = useState<string | null>(null);
   const qrCodeLock = useRef(false);
 
   async function handleOpenCamera() {
@@ -19,7 +26,7 @@ export default function Home() {
       setModalIsVisible(true);
       qrCodeLock.current = false;
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -29,16 +36,19 @@ export default function Home() {
   }
 
   async function sendEmail() {
-    if (!email) return;
+    if (!email) {
+      return Alert.alert("Erro", "Nenhum e-mail detectado");
+    }
 
     try {
-      const response = await axios.post('http://192.168.0.234:3000/send-email', { email });
+      const response = await axios.post("https://seu-projeto.vercel.app/api/send-email", { email });
       if (response.data.success) {
         Alert.alert("Sucesso", "E-mail enviado com sucesso!");
       } else {
         Alert.alert("Erro", "Falha ao enviar o e-mail");
       }
     } catch (error) {
+      console.error(error);
       Alert.alert("Erro", "Erro ao comunicar com o servidor");
     }
   }
@@ -111,10 +121,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#0078D7",
     borderRadius: 10,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
   },
   startButtonText: {
     fontSize: 18,
