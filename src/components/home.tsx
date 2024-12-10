@@ -1,10 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { StyleSheet, View, Text, Modal, TouchableOpacity, Alert, Dimensions } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios";
-import NetInfo from "@react-native-community/netinfo";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get("window");
 const scanAreaSize = width * 0.7;
@@ -14,24 +12,6 @@ export default function Home() {
   const [permission, requestPermission] = useCameraPermissions();
   const [email, setEmail] = useState<string | null>(null);
   const qrCodeLock = useRef(false);
-
-  useEffect(() => {
-    // Verificar se existe e-mail pendente para enviar
-    checkPendingEmail();
-  }, []);
-
-  // Função para verificar se há e-mails pendentes quando a conexão for restaurada
-  useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(state => {
-      if (state.isConnected) {
-        checkPendingEmail();
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
 
   async function handleOpenCamera() {
     try {
@@ -51,28 +31,11 @@ export default function Home() {
     setModalIsVisible(false);
   }
 
-  // Verifica se há um e-mail pendente no AsyncStorage e tenta enviar
-  async function checkPendingEmail() {
-    const pendingEmail = await AsyncStorage.getItem('pendingEmail');
-    if (pendingEmail) {
-      sendEmail(pendingEmail);
-      await AsyncStorage.removeItem('pendingEmail');
-    }
-  }
-
-  async function sendEmail(emailToSend: string) {
-    if (!emailToSend) return;
-
-    // Verificar a conexão com a internet
-    const state = await NetInfo.fetch();
-    if (!state.isConnected) {
-      Alert.alert("Sem Conexão", "Você está offline. O e-mail será enviado assim que a conexão for restaurada.");
-      await AsyncStorage.setItem('pendingEmail', emailToSend); // Salvar o e-mail pendente
-      return;
-    }
+  async function sendEmail() {
+    if (!email) return;
 
     try {
-      const response = await axios.post('http://192.168.0.234:3000/send-email', { email: emailToSend });
+      const response = await axios.post('http://192.168.0.234:3000/send-email', { email });
       if (response.data.success) {
         Alert.alert("Sucesso", "E-mail enviado com sucesso!");
       } else {
@@ -121,7 +84,7 @@ export default function Home() {
       </Modal>
 
       {email && (
-        <TouchableOpacity style={styles.sendButton} onPress={() => sendEmail(email)}>
+        <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
           <Text style={styles.sendButtonText}>Enviar E-mail</Text>
         </TouchableOpacity>
       )}
