@@ -1,10 +1,10 @@
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
+const nodemailer = require('nodemailer');
+const dotenv = require('dotenv');
 
 // Carregar variáveis de ambiente locais (apenas para desenvolvimento)
 dotenv.config();
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ success: false, message: "Método não permitido" });
   }
@@ -41,3 +41,6 @@ export default async function handler(req, res) {
     return res.status(500).json({ success: false, message: error.message });
   }
 }
+
+// Exportando a função
+module.exports = handler;
