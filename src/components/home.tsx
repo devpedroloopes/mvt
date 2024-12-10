@@ -35,7 +35,8 @@ export default function Home() {
     if (!email) return;
 
     try {
-      const response = await axios.post('http://192.168.0.234:3000/send-email', { email });
+      // Conectar ao servidor no Render
+      const response = await axios.post('https://mvt-l13v.onrender.com/send-email', { email });
       if (response.data.success) {
         Alert.alert("Sucesso", "E-mail enviado com sucesso!");
       } else {
@@ -164,25 +165,23 @@ const styles = StyleSheet.create({
     height: scanAreaSize,
     borderRadius: 20,
     borderWidth: 3,
-    borderColor: "#00FF88",
-    opacity: 0.8,
-    backgroundColor: "rgba(0, 0, 0, 0.1)",
+    borderColor: "#00FF00",
   },
   closeButton: {
     position: "absolute",
-    top: 40,
+    top: 30,
     right: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    padding: 10,
-    borderRadius: 50,
   },
   sendButton: {
-    width: "80%",
-    padding: 15,
-    backgroundColor: "#28A745",
+    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 50,
+    backgroundColor: "#0078D7",
     borderRadius: 10,
-    alignItems: "center",
-    marginTop: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
   sendButtonText: {
     fontSize: 18,
