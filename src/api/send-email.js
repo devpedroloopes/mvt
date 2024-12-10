@@ -1,4 +1,8 @@
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+// Carregar variáveis de ambiente locais (apenas para desenvolvimento)
+dotenv.config();
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -12,12 +16,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Configurar o Nodemailer com o Gmail
+    // Configuração do Nodemailer para usar o Gmail
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER, // Variável de ambiente para o e-mail
-        pass: process.env.EMAIL_PASS, // Variável de ambiente para a senha
+        user: process.env.EMAIL_USER, // Seu e-mail configurado na Vercel
+        pass: process.env.EMAIL_PASS, // Senha de aplicativo gerada pelo Gmail
       },
     });
 
@@ -33,6 +37,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ success: true, message: "E-mail enviado com sucesso!" });
   } catch (error) {
+    console.error("Erro ao enviar e-mail:", error);
     return res.status(500).json({ success: false, message: error.message });
   }
 }
