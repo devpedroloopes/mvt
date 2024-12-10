@@ -1,14 +1,15 @@
+const express = require('express');
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 
 // Carregar variáveis de ambiente locais (apenas para desenvolvimento)
 dotenv.config();
 
-async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ success: false, message: "Método não permitido" });
-  }
+const app = express();
+app.use(express.json()); // Permite ler JSON no corpo das requisições
 
+// Rota de envio de e-mail
+app.post('/api/send-email', async (req, res) => {
   const { email } = req.body;
 
   if (!email) {
@@ -40,7 +41,10 @@ async function handler(req, res) {
     console.error("Erro ao enviar e-mail:", error);
     return res.status(500).json({ success: false, message: error.message });
   }
-}
+});
 
-// Exportando a função
-module.exports = handler;
+// Definir a porta do servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
