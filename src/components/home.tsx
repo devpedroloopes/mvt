@@ -4,18 +4,21 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios"; 
 
-export default function Home() {
+export default function home() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
-  const [email, setEmail] = useState<string | null>(null); 
+  const [email, setEmail] = useState<string | null>(null); // Armazena o e-mail lido
   const qrCodeLock = useRef(false);
 
+  // Função que abre a câmera
   async function handleOpenCamera() {
     try {
       const { granted } = await requestPermission();
+
       if (!granted) {
         return Alert.alert("Câmera", "Você precisa habilitar o uso da câmera");
       }
+
       setModalIsVisible(true);
       qrCodeLock.current = false;
     } catch (error) {
@@ -23,11 +26,13 @@ export default function Home() {
     }
   }
 
+  // Função chamada quando o QR Code é lido
   function handleQRCodeRead(data: string) {
-    setEmail(data);
-    setModalIsVisible(false);
+    setEmail(data); // Armazena o e-mail lido do QR Code
+    setModalIsVisible(false); // Fecha a câmera
   }
 
+  // Função para enviar o e-mail
   async function sendEmail() {
     if (!email) return;
 
@@ -52,6 +57,7 @@ export default function Home() {
         <Text style={styles.startButtonText}>Iniciar Leitura</Text>
       </TouchableOpacity>
 
+      {/* Modal de Câmera */}
       <Modal visible={modalIsVisible} transparent={true}>
         <View style={styles.overlay}>
           <CameraView
@@ -64,6 +70,8 @@ export default function Home() {
               }
             }}
           />
+
+          {/* Botão de fechar no canto superior direito */}
           <TouchableOpacity
             style={styles.closeButton}
             onPress={() => setModalIsVisible(false)}
@@ -73,10 +81,14 @@ export default function Home() {
         </View>
       </Modal>
 
+      {/* Mostrar botão para enviar e-mail após QR Code ser lido */}
       {email && (
+        <View style={styles.emailContainer}>
+          <Text style={styles.emailText}>E-mail detectado: {email}</Text>
           <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
             <Text style={styles.sendButtonText}>Enviar E-mail</Text>
           </TouchableOpacity>
+        </View>
       )}
     </View>
   );
@@ -88,30 +100,30 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#333",
+    backgroundColor: "#f7f7f7",
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#333",
     marginBottom: 20,
   },
   subtitle: {
     fontSize: 16,
-    color: "#ccc",
+    color: "#777",
     marginBottom: 40,
     textAlign: "center",
   },
   startButton: {
     width: "80%",
     padding: 15,
-    backgroundColor: "#0078D7",
+    backgroundColor: "#4CAF50", 
     borderRadius: 10,
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   startButtonText: {
     fontSize: 18,
@@ -122,7 +134,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.9)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   camera: {
     width: "100%",
@@ -132,30 +144,26 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 40,
     right: 20,
-    backgroundColor: "#555",
+    backgroundColor: "#333", 
     padding: 10,
     borderRadius: 50,
+    opacity: 0.7,
+    zIndex: 10,
   },
   emailContainer: {
     marginTop: 20,
     alignItems: "center",
-    backgroundColor: "#444",
-    padding: 15,
-    borderRadius: 10,
-    width: "90%",
   },
   emailText: {
     fontSize: 16,
-    color: "#ccc",
+    color: "#333",
     marginBottom: 10,
   },
   sendButton: {
-    width: "80%",
     padding: 15,
-    backgroundColor: "#28A745",
+    backgroundColor: "#007BFF", 
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 10,
   },
   sendButtonText: {
     fontSize: 18,
