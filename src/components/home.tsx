@@ -4,21 +4,18 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios"; 
 
-export default function home() {
+export default function Home() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
-  const [email, setEmail] = useState<string | null>(null); // Armazena o e-mail lido
+  const [email, setEmail] = useState<string | null>(null); 
   const qrCodeLock = useRef(false);
 
-  // Função que abre a câmera
   async function handleOpenCamera() {
     try {
       const { granted } = await requestPermission();
-
       if (!granted) {
         return Alert.alert("Câmera", "Você precisa habilitar o uso da câmera");
       }
-
       setModalIsVisible(true);
       qrCodeLock.current = false;
     } catch (error) {
@@ -26,13 +23,11 @@ export default function home() {
     }
   }
 
-  // Função chamada quando o QR Code é lido
   function handleQRCodeRead(data: string) {
-    setEmail(data); // Armazena o e-mail lido do QR Code
-    setModalIsVisible(false); // Fecha a câmera
+    setEmail(data);
+    setModalIsVisible(false);
   }
 
-  // Função para enviar o e-mail
   async function sendEmail() {
     if (!email) return;
 
@@ -57,7 +52,6 @@ export default function home() {
         <Text style={styles.startButtonText}>Iniciar Leitura</Text>
       </TouchableOpacity>
 
-      {/* Modal de Câmera */}
       <Modal visible={modalIsVisible} transparent={true}>
         <View style={styles.overlay}>
           <CameraView
@@ -70,8 +64,6 @@ export default function home() {
               }
             }}
           />
-
-          {/* Botão de fechar no canto superior direito */}
           <TouchableOpacity
             style={styles.closeButton}
             onPress={() => setModalIsVisible(false)}
@@ -81,7 +73,6 @@ export default function home() {
         </View>
       </Modal>
 
-      {/* Mostrar botão para enviar e-mail após QR Code ser lido */}
       {email && (
         <View style={styles.emailContainer}>
           <Text style={styles.emailText}>E-mail detectado: {email}</Text>
@@ -100,30 +91,30 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#f7f7f7",
+    backgroundColor: "#333",
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#333",
+    color: "#fff",
     marginBottom: 20,
   },
   subtitle: {
     fontSize: 16,
-    color: "#777",
+    color: "#ccc",
     marginBottom: 40,
     textAlign: "center",
   },
   startButton: {
     width: "80%",
     padding: 15,
-    backgroundColor: "#4CAF50", 
+    backgroundColor: "#0078D7",
     borderRadius: 10,
     alignItems: "center",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
   },
   startButtonText: {
     fontSize: 18,
@@ -134,7 +125,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
   },
   camera: {
     width: "100%",
@@ -144,26 +135,30 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 40,
     right: 20,
-    backgroundColor: "#333", 
+    backgroundColor: "#555",
     padding: 10,
     borderRadius: 50,
-    opacity: 0.7,
-    zIndex: 10,
   },
   emailContainer: {
     marginTop: 20,
     alignItems: "center",
+    backgroundColor: "#444",
+    padding: 15,
+    borderRadius: 10,
+    width: "90%",
   },
   emailText: {
     fontSize: 16,
-    color: "#333",
+    color: "#ccc",
     marginBottom: 10,
   },
   sendButton: {
+    width: "80%",
     padding: 15,
-    backgroundColor: "#007BFF", 
+    backgroundColor: "#28A745",
     borderRadius: 10,
     alignItems: "center",
+    marginTop: 10,
   },
   sendButtonText: {
     fontSize: 18,
