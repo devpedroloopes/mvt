@@ -10,6 +10,8 @@ export default function Home() {
   const [email, setEmail] = useState<string | null>(null);
   const qrCodeLock = useRef(false);
 
+  const API_URL = 'http://localhost:5000'; // Substitua pelo domínio/URL de produção, se necessário
+
   async function handleOpenCamera() {
     try {
       const { granted } = await requestPermission();
@@ -43,7 +45,7 @@ export default function Home() {
     }
 
     try {
-      const response = await axios.post('https://mvt-42t9.onrender.com/api/send-email', { email });
+      const response = await axios.post(`${API_URL}`, { email });
 
       if (response.data.success) {
         Alert.alert('Sucesso', 'E-mail enviado com sucesso!');
@@ -51,7 +53,7 @@ export default function Home() {
         Alert.alert('Erro', response.data.message || 'Falha ao enviar o e-mail');
       }
     } catch (error: unknown) {
-      if (error instanceof Error) {
+      if (axios.isAxiosError(error)) {
         console.error('Erro ao enviar o e-mail:', error.message);
         Alert.alert('Erro', 'Erro ao comunicar com o servidor: ' + error.message);
       } else {
