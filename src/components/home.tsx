@@ -10,7 +10,7 @@ export default function Home() {
   const [email, setEmail] = useState<string | null>(null);
   const qrCodeLock = useRef(false);
 
-  const API_URL = 'http://localhost:5000'; // Substitua pelo domínio/URL de produção, se necessário
+  const API_URL = 'https://mvt-al9m.onrender.com'; // Substitua pelo domínio/URL de produção, se necessário
 
   async function handleOpenCamera() {
     try {
