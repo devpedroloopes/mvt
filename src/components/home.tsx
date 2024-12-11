@@ -43,7 +43,7 @@ export default function Home() {
     }
 
     try {
-      const response = await axios.post('https://seu-projeto.onrender.com/api/send-email', { email });
+      const response = await axios.post('https://mvt-42t9.onrender.com/api/send-email', { email });
 
       if (response.data.success) {
         Alert.alert('Sucesso', 'E-mail enviado com sucesso!');
