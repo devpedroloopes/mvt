@@ -1,50 +1,42 @@
+require('dotenv').config();
 const express = require('express');
 const nodemailer = require('nodemailer');
-const dotenv = require('dotenv');
-
-// Carregar variáveis de ambiente locais (apenas para desenvolvimento)
-dotenv.config();
+const bodyParser = require('body-parser');
 
 const app = express();
-app.use(express.json()); // Permite ler JSON no corpo das requisições
+const PORT = process.env.PORT || 3000;
 
-// Rota de envio de e-mail
+app.use(bodyParser.json());
+
 app.post('/api/send-email', async (req, res) => {
   const { email } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ success: false, message: "E-mail não fornecido" });
+  if (!email || !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+    return res.status(400).json({ success: false, message: 'E-mail inválido ou não fornecido' });
   }
 
   try {
-    // Configuração do Nodemailer para usar o Gmail
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      service: 'gmail',
       auth: {
-        user: process.env.EMAIL_USER, // Seu e-mail configurado na Vercel
-        pass: process.env.EMAIL_PASS, // Senha de aplicativo gerada pelo Gmail
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: "Aviso de Visita Técnica",
-      text: "O técnico realizou a visita no local.",
+      subject: 'Aviso de Visita Técnica',
+      text: 'O técnico realizou a visita no local.',
     };
 
-    // Enviar o e-mail
     await transporter.sendMail(mailOptions);
-
-    return res.status(200).json({ success: true, message: "E-mail enviado com sucesso!" });
+    return res.status(200).json({ success: true, message: 'E-mail enviado com sucesso!' });
   } catch (error) {
-    console.error("Erro ao enviar e-mail:", error);
-    return res.status(500).json({ success: false, message: error.message });
+    console.error('Erro ao enviar e-mail:', error.message);
+    return res.status(500).json({ success: false, message: 'Erro ao enviar o e-mail' });
   }
 });
 
-// Definir a porta do servidor
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));

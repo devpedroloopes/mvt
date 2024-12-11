@@ -1,15 +1,8 @@
-import React, { useState, useRef } from "react";
-import {
-  StyleSheet,
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
-import { CameraView, useCameraPermissions } from "expo-camera";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import axios from "axios";
+import React, { useState, useRef } from 'react';
+import { StyleSheet, View, Text, Modal, TouchableOpacity, Alert } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import axios from 'axios';
 
 export default function Home() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
@@ -21,7 +14,7 @@ export default function Home() {
     try {
       const { granted } = await requestPermission();
       if (!granted) {
-        return Alert.alert("Câmera", "Você precisa habilitar o uso da câmera");
+        return Alert.alert('Câmera', 'Você precisa habilitar o uso da câmera');
       }
       setModalIsVisible(true);
       qrCodeLock.current = false;
@@ -31,25 +24,40 @@ export default function Home() {
   }
 
   function handleQRCodeRead(data: string) {
+    if (qrCodeLock.current) return;
+
+    const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    if (!emailRegex.test(data)) {
+      Alert.alert('Erro', 'Código QR inválido, não é um e-mail.');
+      return;
+    }
+
+    qrCodeLock.current = true;
     setEmail(data);
     setModalIsVisible(false);
   }
 
   async function sendEmail() {
     if (!email) {
-      return Alert.alert("Erro", "Nenhum e-mail detectado");
+      return Alert.alert('Erro', 'Nenhum e-mail detectado');
     }
 
     try {
-      const response = await axios.post("https://mvt-pedrohsl2003s-projects.vercel.app/src/api/send-email", { email });
+      const response = await axios.post('https://seu-projeto.onrender.com/api/send-email', { email });
+
       if (response.data.success) {
-        Alert.alert("Sucesso", "E-mail enviado com sucesso!");
+        Alert.alert('Sucesso', 'E-mail enviado com sucesso!');
       } else {
-        Alert.alert("Erro", "Falha ao enviar o e-mail");
+        Alert.alert('Erro', response.data.message || 'Falha ao enviar o e-mail');
       }
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Erro", "Erro ao comunicar com o servidor");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Erro ao enviar o e-mail:', error.message);
+        Alert.alert('Erro', 'Erro ao comunicar com o servidor: ' + error.message);
+      } else {
+        console.error('Erro desconhecido:', error);
+        Alert.alert('Erro', 'Erro desconhecido ao comunicar com o servidor.');
+      }
     }
   }
 
@@ -68,10 +76,7 @@ export default function Home() {
             style={styles.camera}
             facing="back"
             onBarcodeScanned={({ data }) => {
-              if (data && !qrCodeLock.current) {
-                qrCodeLock.current = true;
-                setTimeout(() => handleQRCodeRead(data), 500);
-              }
+              if (data) handleQRCodeRead(data);
             }}
           />
           <TouchableOpacity
@@ -98,77 +103,77 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
-    backgroundColor: "#333",
+    backgroundColor: '#333',
   },
   title: {
     fontSize: 28,
-    fontWeight: "bold",
-    color: "#fff",
+    fontWeight: 'bold',
+    color: '#fff',
     marginBottom: 20,
   },
   subtitle: {
     fontSize: 16,
-    color: "#ccc",
+    color: '#ccc',
     marginBottom: 40,
-    textAlign: "center",
+    textAlign: 'center',
   },
   startButton: {
-    width: "80%",
+    width: '80%',
     padding: 15,
-    backgroundColor: "#0078D7",
+    backgroundColor: '#0078D7',
     borderRadius: 10,
-    alignItems: "center",
+    alignItems: 'center',
   },
   startButtonText: {
     fontSize: 18,
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#fff',
+    fontWeight: 'bold',
   },
   overlay: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.9)",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
   },
   camera: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   closeButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 40,
     right: 20,
-    backgroundColor: "#555",
+    backgroundColor: '#555',
     padding: 10,
     borderRadius: 50,
   },
   emailContainer: {
     marginTop: 20,
-    alignItems: "center",
-    backgroundColor: "#444",
+    alignItems: 'center',
+    backgroundColor: '#444',
     padding: 15,
     borderRadius: 10,
-    width: "90%",
+    width: '90%',
   },
   emailText: {
     fontSize: 16,
-    color: "#ccc",
+    color: '#ccc',
     marginBottom: 10,
   },
   sendButton: {
-    width: "80%",
+    width: '80%',
     padding: 15,
-    backgroundColor: "#28A745",
+    backgroundColor: '#28A745',
     borderRadius: 10,
-    alignItems: "center",
+    alignItems: 'center',
     marginTop: 10,
   },
   sendButtonText: {
     fontSize: 18,
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
