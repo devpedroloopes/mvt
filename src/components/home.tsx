@@ -8,9 +8,10 @@ export default function Home() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const [email, setEmail] = useState<string | null>(null);
+  const [emailSent, setEmailSent] = useState(false);
   const qrCodeLock = useRef(false);
 
-  const API_URL = 'https://mvt-al9m.onrender.com'; // Substitua pelo domínio/URL de produção, se necessário
+  const API_URL = 'https://mvt-al9m.onrender.com';
 
   async function handleOpenCamera() {
     try {
@@ -28,14 +29,18 @@ export default function Home() {
   function handleQRCodeRead(data: string) {
     if (qrCodeLock.current) return;
 
+    const lines = data.split(/\r?\n/);
     const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-    if (!emailRegex.test(data)) {
-      Alert.alert('Erro', 'Código QR inválido, não é um e-mail.');
+
+    const possibleEmail = lines[0]?.trim();
+    if (!emailRegex.test(possibleEmail)) {
+      Alert.alert('Erro', 'Código QR inválido, não contém um e-mail válido na primeira linha.');
       return;
     }
 
     qrCodeLock.current = true;
-    setEmail(data);
+    setEmail(possibleEmail);
+    setEmailSent(false);
     setModalIsVisible(false);
   }
 
@@ -44,12 +49,14 @@ export default function Home() {
       return Alert.alert('Erro', 'Nenhum e-mail detectado');
     }
 
+    setEmailSent(true);
+    setEmail(null);
+    setTimeout(() => setEmailSent(false), 3000);
+
     try {
       const response = await axios.post(`${API_URL}`, { email });
 
-      if (response.data.success) {
-        Alert.alert('Sucesso', 'E-mail enviado com sucesso!');
-      } else {
+      if (!response.data.success) {
         Alert.alert('Erro', response.data.message || 'Falha ao enviar o e-mail');
       }
     } catch (error: unknown) {
@@ -68,9 +75,19 @@ export default function Home() {
       <Text style={styles.title}>Escaneie o QR Code</Text>
       <Text style={styles.subtitle}>Posicione o QR Code dentro da área abaixo</Text>
 
-      <TouchableOpacity style={styles.startButton} onPress={handleOpenCamera}>
-        <Text style={styles.startButtonText}>Iniciar Leitura</Text>
+      <TouchableOpacity style={styles.button} onPress={handleOpenCamera}>
+        <Text style={styles.buttonText}>Iniciar Leitura</Text>
       </TouchableOpacity>
+
+      {email && (
+        <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
+          <Text style={styles.buttonText}>Enviar E-mail</Text>
+        </TouchableOpacity>
+      )}
+
+      {emailSent && (
+        <Text style={styles.successMessage}>E-mail enviado!</Text>
+      )}
 
       <Modal visible={modalIsVisible} transparent={true}>
         <View style={styles.overlay}>
@@ -81,6 +98,7 @@ export default function Home() {
               if (data) handleQRCodeRead(data);
             }}
           />
+          <View style={styles.focusBox} />
           <TouchableOpacity
             style={styles.closeButton}
             onPress={() => setModalIsVisible(false)}
@@ -89,15 +107,6 @@ export default function Home() {
           </TouchableOpacity>
         </View>
       </Modal>
-
-      {email && (
-        <View style={styles.emailContainer}>
-          <Text style={styles.emailText}>E-mail detectado: {email}</Text>
-          <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
-            <Text style={styles.sendButtonText}>Enviar E-mail</Text>
-          </TouchableOpacity>
-        </View>
-      )}
     </View>
   );
 }
@@ -122,14 +131,23 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     textAlign: 'center',
   },
-  startButton: {
+  button: {
     width: '80%',
     padding: 15,
     backgroundColor: '#0078D7',
     borderRadius: 10,
     alignItems: 'center',
+    marginBottom: 20,
   },
-  startButtonText: {
+  sendButton: {
+    width: '80%',
+    padding: 15,
+    backgroundColor: '#28A745',
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  buttonText: {
     fontSize: 18,
     color: '#fff',
     fontWeight: 'bold',
@@ -143,6 +161,17 @@ const styles = StyleSheet.create({
   camera: {
     width: '100%',
     height: '100%',
+    position: 'absolute',
+  },
+  focusBox: {
+    width: 250,
+    height: 250,
+    borderWidth: 3,
+    borderColor: '#00FF00',
+    borderRadius: 10,
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   closeButton: {
     position: 'absolute',
@@ -152,30 +181,10 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 50,
   },
-  emailContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-    backgroundColor: '#444',
-    padding: 15,
-    borderRadius: 10,
-    width: '90%',
-  },
-  emailText: {
+  successMessage: {
     fontSize: 16,
     color: '#ccc',
-    marginBottom: 10,
-  },
-  sendButton: {
-    width: '80%',
-    padding: 15,
-    backgroundColor: '#28A745',
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  sendButtonText: {
-    fontSize: 18,
-    color: '#fff',
-    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
