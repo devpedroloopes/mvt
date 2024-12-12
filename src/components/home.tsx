@@ -8,7 +8,7 @@ export default function Home() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const [email, setEmail] = useState<string | null>(null);
-  const [subject, setSubject] = useState<string | null>(null);
+  const [clientName, setClientName] = useState<string | null>(null);
   const [location, setLocation] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
   const qrCodeLock = useRef(false);
@@ -35,7 +35,7 @@ export default function Home() {
     const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
     const possibleEmail = lines[0]?.trim();
-    const possibleSubject = lines[1]?.trim();
+    const possibleClientName = lines[1]?.trim();
     const possibleLocation = lines[2]?.trim();
 
     if (!emailRegex.test(possibleEmail)) {
@@ -45,13 +45,13 @@ export default function Home() {
 
     qrCodeLock.current = true;
     setEmail(possibleEmail);
-    setSubject(possibleSubject || 'Sem assunto');
+    setClientName(possibleClientName || 'Nome não especificado');
     setLocation(possibleLocation || 'Local não especificado');
     setModalIsVisible(false);
   }
 
   async function sendEmail() {
-    if (!email || !subject || !location) {
+    if (!email || !location || !clientName) {
       return Alert.alert('Erro', 'Dados incompletos. Escaneie o QR Code novamente.');
     }
 
@@ -59,13 +59,17 @@ export default function Home() {
     setTimeout(() => setEmailSent(false), 3000);
 
     try {
-      const response = await axios.post(`${API_URL}`, { email, subject, location });
+      const response = await axios.post(`${API_URL}`, {
+        email,
+        clientName,
+        location,
+      });
 
       if (!response.data.success) {
         Alert.alert('Erro', response.data.message || 'Falha ao enviar o e-mail');
       } else {
         setEmail(null);
-        setSubject(null);
+        setClientName(null);
         setLocation(null);
       }
     } catch (error: unknown) {
@@ -88,7 +92,7 @@ export default function Home() {
         <Text style={styles.buttonText}>Iniciar Leitura</Text>
       </TouchableOpacity>
 
-      {email && subject && location && (
+      {email && clientName && location && (
         <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
           <Text style={styles.buttonText}>Enviar E-mail</Text>
         </TouchableOpacity>
