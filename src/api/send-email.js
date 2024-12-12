@@ -22,10 +22,10 @@ const transporter = nodemailer.createTransport({
 
 // API Routes
 app.post('/', async (req, res) => {
-  const { email, subject, location, scannedAt } = req.body;
+  const { email, name, location, scannedAt } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ success: false, message: 'E-mail é obrigatório.' });
+  if (!email || !name) {
+    return res.status(400).json({ success: false, message: 'E-mail e nome do cliente são obrigatórios.' });
   }
 
   const scanDateTime = scannedAt || new Date();
@@ -39,12 +39,19 @@ app.post('/', async (req, res) => {
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
-      subject: subject || 'Sem assunto',
+      subject: `Aviso de Visita Técnica: ${name}`,
       html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-          <h2>Confirmação de QR Code</h2>
-          <p><strong>Data e Hora:</strong> ${formattedDateTime}</p>
-          <p><strong>Local:</strong> ${location || 'Local não especificado'}</p>
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; max-width: 600px; margin: 0 auto; color: #333;">
+          <h2 style="text-align: center; color: #0056b3;">Aviso de Visita Técnica</h2>
+          <p>Prezado(a) <strong>${name}</strong>,</p>
+          <p>Informamos que nossa equipe realizou uma visita técnica conforme os detalhes abaixo:</p>
+          <ul style="list-style: none; padding: 0; margin: 15px 0;">
+            <li><strong>Data e Hora:</strong> ${formattedDateTime}</li>
+            <li><strong>Local:</strong> ${location || 'Local não especificado'}</li>
+          </ul>
+          <p>Caso tenha alguma dúvida ou precise de informações adicionais, não hesite em nos contatar.</p>
+          <p>Atenciosamente,</p>
+          <p style="font-weight: bold; color: #0056b3;">Equipe de Suporte Técnico</p>
         </div>
       `,
     });
