@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
@@ -23,7 +22,7 @@ const transporter = nodemailer.createTransport({
 
 // API Routes
 app.post('/', async (req, res) => {
-  const { email, scannedAt } = req.body;
+  const { email, subject, location, scannedAt } = req.body;
 
   if (!email) {
     return res.status(400).json({ success: false, message: 'E-mail é obrigatório.' });
@@ -37,23 +36,17 @@ app.post('/', async (req, res) => {
   });
 
   try {
-    // Send email
     await transporter.sendMail({
-      from: process.env.MAIL_FROM, // Sender address
-      to: email, // List of receivers
-      subject: 'Confirmação de QR Code', // Subject line
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: subject || 'Sem assunto',
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-          <h2 style="text-align: center;">Confirmação de QR Code</h2>
-          <p>Olá,</p>
-          <p>Você escaneou um QR Code com sucesso.</p>
+          <h2>Confirmação de QR Code</h2>
           <p><strong>Data e Hora:</strong> ${formattedDateTime}</p>
-          <p><strong>Local:</strong> Não especificado</p>
-          <br>
-          <p>Atenciosamente,</p>
-          <p><strong>Equipe de Suporte</strong></p>
+          <p><strong>Local:</strong> ${location || 'Local não especificado'}</p>
         </div>
-      `, // HTML body
+      `,
     });
 
     res.status(200).json({ success: true, message: 'E-mail enviado com sucesso!' });

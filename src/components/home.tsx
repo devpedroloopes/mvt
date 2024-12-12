@@ -7,7 +7,6 @@ import axios from 'axios';
 export default function Home() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
-  const [email, setEmail] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
   const qrCodeLock = useRef(false);
 
@@ -33,28 +32,27 @@ export default function Home() {
     const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
     const possibleEmail = lines[0]?.trim();
+    const possibleSubject = lines[1]?.trim();
+    const possibleLocation = lines[2]?.trim();
+
     if (!emailRegex.test(possibleEmail)) {
       Alert.alert('Erro', 'Código QR inválido, não contém um e-mail válido na primeira linha.');
       return;
     }
 
     qrCodeLock.current = true;
-    setEmail(possibleEmail);
-    setEmailSent(false);
     setModalIsVisible(false);
+    setEmailSent(false);
+
+    sendEmail(possibleEmail, possibleSubject || 'Sem assunto', possibleLocation || 'Local não especificado');
   }
 
-  async function sendEmail() {
-    if (!email) {
-      return Alert.alert('Erro', 'Nenhum e-mail detectado');
-    }
-
+  async function sendEmail(email: string, subject: string, location: string) {
     setEmailSent(true);
-    setEmail(null);
     setTimeout(() => setEmailSent(false), 3000);
 
     try {
-      const response = await axios.post(`${API_URL}`, { email });
+      const response = await axios.post(`${API_URL}`, { email, subject, location });
 
       if (!response.data.success) {
         Alert.alert('Erro', response.data.message || 'Falha ao enviar o e-mail');
@@ -79,15 +77,7 @@ export default function Home() {
         <Text style={styles.buttonText}>Iniciar Leitura</Text>
       </TouchableOpacity>
 
-      {email && (
-        <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
-          <Text style={styles.buttonText}>Enviar E-mail</Text>
-        </TouchableOpacity>
-      )}
-
-      {emailSent && (
-        <Text style={styles.successMessage}>E-mail enviado!</Text>
-      )}
+      {emailSent && <Text style={styles.successMessage}>E-mail enviado!</Text>}
 
       <Modal visible={modalIsVisible} transparent={true}>
         <View style={styles.overlay}>
@@ -135,14 +125,6 @@ const styles = StyleSheet.create({
     width: '80%',
     padding: 15,
     backgroundColor: '#0078D7',
-    borderRadius: 10,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  sendButton: {
-    width: '80%',
-    padding: 15,
-    backgroundColor: '#28A745',
     borderRadius: 10,
     alignItems: 'center',
     marginBottom: 20,
