@@ -8,7 +8,7 @@ export default function Home() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const [email, setEmail] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
+  const [subject, setSubject] = useState<string | null>(null);
   const [location, setLocation] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
   const qrCodeLock = useRef(false);
@@ -35,7 +35,7 @@ export default function Home() {
     const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
     const possibleEmail = lines[0]?.trim();
-    const possibleName = lines[1]?.trim();
+    const possibleSubject = lines[1]?.trim();
     const possibleLocation = lines[2]?.trim();
 
     if (!emailRegex.test(possibleEmail)) {
@@ -45,33 +45,30 @@ export default function Home() {
 
     qrCodeLock.current = true;
     setEmail(possibleEmail);
-    setName(possibleName || 'Cliente não identificado');
+    setSubject(possibleSubject || 'Sem assunto');
     setLocation(possibleLocation || 'Local não especificado');
     setModalIsVisible(false);
   }
 
   async function sendEmail() {
-    if (!email || !name || !location) {
-      return Alert.alert('Erro', 'Dados incompletos para envio do e-mail.');
+    if (!email || !subject || !location) {
+      return Alert.alert('Erro', 'Dados incompletos. Escaneie o QR Code novamente.');
     }
 
     setEmailSent(true);
     setTimeout(() => setEmailSent(false), 3000);
 
     try {
-      const response = await axios.post(`${API_URL}`, {
-        email,
-        name,
-        location,
-        scannedAt: new Date().toISOString(),
-      });
+      const response = await axios.post(`${API_URL}`, { email, subject, location });
 
       if (!response.data.success) {
         Alert.alert('Erro', response.data.message || 'Falha ao enviar o e-mail');
       } else {
-        Alert.alert('Sucesso', 'E-mail enviado com sucesso!');
+        setEmail(null);
+        setSubject(null);
+        setLocation(null);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.error('Erro ao enviar o e-mail:', error.message);
         Alert.alert('Erro', 'Erro ao comunicar com o servidor: ' + error.message);
@@ -91,7 +88,7 @@ export default function Home() {
         <Text style={styles.buttonText}>Iniciar Leitura</Text>
       </TouchableOpacity>
 
-      {email && (
+      {email && subject && location && (
         <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
           <Text style={styles.buttonText}>Enviar E-mail</Text>
         </TouchableOpacity>
