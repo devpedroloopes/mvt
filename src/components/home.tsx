@@ -64,7 +64,6 @@ export default function Home() {
       if (!response.data.success) {
         Alert.alert('Erro', response.data.message || 'Falha ao enviar o e-mail');
       } else {
-        Alert.alert('Sucesso', 'E-mail enviado com sucesso!');
         setEmail(null);
         setSubject(null);
         setLocation(null);
@@ -90,14 +89,9 @@ export default function Home() {
       </TouchableOpacity>
 
       {email && subject && location && (
-        <>
-          <Text style={styles.infoText}>E-mail: {email}</Text>
-          <Text style={styles.infoText}>Assunto: {subject}</Text>
-          <Text style={styles.infoText}>Local: {location}</Text>
-          <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
-            <Text style={styles.buttonText}>Enviar E-mail</Text>
-          </TouchableOpacity>
-        </>
+        <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
+          <Text style={styles.buttonText}>Enviar E-mail</Text>
+        </TouchableOpacity>
       )}
 
       {emailSent && <Text style={styles.successMessage}>E-mail enviado!</Text>}
@@ -164,11 +158,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#fff',
     fontWeight: 'bold',
-  },
-  infoText: {
-    fontSize: 16,
-    color: '#fff',
-    marginVertical: 5,
   },
   overlay: {
     flex: 1,
