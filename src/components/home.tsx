@@ -7,6 +7,9 @@ import axios from 'axios';
 export default function Home() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
+  const [email, setEmail] = useState<string | null>(null);
+  const [subject, setSubject] = useState<string | null>(null);
+  const [location, setLocation] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
   const qrCodeLock = useRef(false);
 
@@ -41,13 +44,17 @@ export default function Home() {
     }
 
     qrCodeLock.current = true;
+    setEmail(possibleEmail);
+    setSubject(possibleSubject || 'Sem assunto');
+    setLocation(possibleLocation || 'Local não especificado');
     setModalIsVisible(false);
-    setEmailSent(false);
-
-    sendEmail(possibleEmail, possibleSubject || 'Sem assunto', possibleLocation || 'Local não especificado');
   }
 
-  async function sendEmail(email: string, subject: string, location: string) {
+  async function sendEmail() {
+    if (!email || !subject || !location) {
+      return Alert.alert('Erro', 'Dados incompletos. Escaneie o QR Code novamente.');
+    }
+
     setEmailSent(true);
     setTimeout(() => setEmailSent(false), 3000);
 
@@ -56,6 +63,11 @@ export default function Home() {
 
       if (!response.data.success) {
         Alert.alert('Erro', response.data.message || 'Falha ao enviar o e-mail');
+      } else {
+        Alert.alert('Sucesso', 'E-mail enviado com sucesso!');
+        setEmail(null);
+        setSubject(null);
+        setLocation(null);
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
@@ -76,6 +88,17 @@ export default function Home() {
       <TouchableOpacity style={styles.button} onPress={handleOpenCamera}>
         <Text style={styles.buttonText}>Iniciar Leitura</Text>
       </TouchableOpacity>
+
+      {email && subject && location && (
+        <>
+          <Text style={styles.infoText}>E-mail: {email}</Text>
+          <Text style={styles.infoText}>Assunto: {subject}</Text>
+          <Text style={styles.infoText}>Local: {location}</Text>
+          <TouchableOpacity style={styles.sendButton} onPress={sendEmail}>
+            <Text style={styles.buttonText}>Enviar E-mail</Text>
+          </TouchableOpacity>
+        </>
+      )}
 
       {emailSent && <Text style={styles.successMessage}>E-mail enviado!</Text>}
 
@@ -129,10 +152,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
+  sendButton: {
+    width: '80%',
+    padding: 15,
+    backgroundColor: '#28A745',
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
   buttonText: {
     fontSize: 18,
     color: '#fff',
     fontWeight: 'bold',
+  },
+  infoText: {
+    fontSize: 16,
+    color: '#fff',
+    marginVertical: 5,
   },
   overlay: {
     flex: 1,
