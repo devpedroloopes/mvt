@@ -31,9 +31,7 @@ app.post('/', async (req, res) => {
   const scanDateTime = scannedAt || new Date();
   const formattedDateTime = scanDateTime.toLocaleString('pt-BR', {
     timeZone: 'America/Sao_Paulo',
-    dateStyle: 'short',
-    timeStyle: 'short',
-  });
+  }).replace(/\//g, '/'); // Ensure dd/mm/yyyy hh:mm format
 
   try {
     await transporter.sendMail({
