@@ -39,12 +39,12 @@ app.post('/', async (req, res) => {
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Confirmação de Visita Técnica',
+      subject: 'Aviso de Visita Técnica Realizada',
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-          <h2 style="color: #4CAF50;">Confirmação de Visita Técnica</h2>
+          <h2 style="color: #4CAF50;">Aviso de Visita Técnica Realizada</h2>
           <p>Prezado(a) <strong>${clientName || 'Cliente'}</strong>,</p>
-          <p>Este e-mail é para confirmar que uma leitura de QR Code foi realizada com sucesso, conforme os detalhes abaixo:</p>
+          <p>Informamos que a visita técnica foi realizada com sucesso. Seguem os detalhes da visita:</p>
           <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
             <tr>
               <td style="padding: 8px; border: 1px solid #ddd;"><strong>Nome do Cliente:</strong></td>
@@ -59,7 +59,7 @@ app.post('/', async (req, res) => {
               <td style="padding: 8px; border: 1px solid #ddd;">${formattedDateTime}</td>
             </tr>
           </table>
-          <p style="margin-top: 20px;">Agradecemos pela sua atenção. Caso tenha dúvidas ou precise de mais informações, por favor, entre em contato conosco através deste e-mail.</p>
+          <p style="margin-top: 20px;">Agradecemos pela confiança em nossos serviços. Caso tenha dúvidas ou precise de mais informações, estamos à disposição.</p>
           <p>Atenciosamente,</p>
           <p style="color: #4CAF50;"><strong>Equipe Técnica</strong></p>
           <p><em>Este é um e-mail automático, por favor, não responda diretamente a esta mensagem.</em></p>
