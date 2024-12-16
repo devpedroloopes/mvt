@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { supabase } from '../server/db'; 
+import { supabase } from '../server/db'; // Importando o Supabase
 
 const LoginScreen = ({ navigation }: any) => {
   const [username, setUsername] = useState('');
@@ -40,8 +40,36 @@ const LoginScreen = ({ navigation }: any) => {
     if (error || !data) {
       showErrorMessage('Credenciais inválidas');
     } else {
-      // Navega para a tela inicial, passando a assinatura como parâmetro
-      navigation.navigate('Home', { signature: data.signature });
+      // Envia os dados para o backend de envio de e-mails
+      await sendEmail({
+        email: 'cliente@email.com', // Substitua pelo e-mail do cliente
+        clientName: 'Cliente Teste',
+        location: 'São Paulo',
+        scannedAt: new Date(),
+        signature: data.signature, // Passa a URL da assinatura
+      });
+
+      navigation.navigate('Home');
+    }
+  };
+
+  const sendEmail = async (emailData: any) => {
+    try {
+      const response = await fetch('http://localhost:5000', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(emailData),
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        showErrorMessage('Erro ao enviar o e-mail.');
+      }
+    } catch (error) {
+      console.error('Erro ao enviar o e-mail:', error);
+      showErrorMessage('Erro ao enviar o e-mail.');
     }
   };
 
