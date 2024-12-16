@@ -22,7 +22,7 @@ const transporter = nodemailer.createTransport({
 
 // API Routes
 app.post('/', async (req, res) => {
-  const { email, clientName, location, scannedAt } = req.body;
+  const { email, clientName, location, scannedAt, signature } = req.body;
 
   if (!email) {
     return res.status(400).json({ success: false, message: 'E-mail é obrigatório.' });
@@ -62,6 +62,12 @@ app.post('/', async (req, res) => {
           <p>Atenciosamente,</p>
           <p style="color: #4CAF50;"><strong>Equipe Técnica</strong></p>
           <p><em>Este é um e-mail automático, por favor, não responda diretamente a esta mensagem.</em></p>
+          ${signature ? `
+            <div style="margin-top: 20px;">
+              <p><strong>Assinatura:</strong></p>
+              <img src="${signature}" alt="Assinatura" style="max-width: 300px; height: auto;" />
+            </div>
+          ` : ''}
         </div>
       `,
     });
