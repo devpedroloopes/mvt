@@ -39,10 +39,9 @@ app.post('/', async (req, res) => {
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Aviso de Visita Técnica Realizada',
+      subject: 'Visita Técnica Realizada',
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-          <h2 style="color: #4CAF50;">Aviso de Visita Técnica Realizada</h2>
           <p>Prezado(a) <strong>${clientName || 'Cliente'}</strong>,</p>
           <p>Informamos que a visita técnica foi realizada com sucesso. Seguem os detalhes da visita:</p>
           <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
