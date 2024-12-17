@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -20,9 +22,21 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Função para converter imagem em Base64
+const imageToBase64 = (imagePath) => {
+  try {
+    const imageBuffer = fs.readFileSync(imagePath);
+    const base64Image = `data:image/png;base64,${imageBuffer.toString('base64')}`;
+    return base64Image;
+  } catch (error) {
+    console.error('Erro ao converter imagem para Base64:', error);
+    return null;
+  }
+};
+
 // API Routes
 app.post('/', async (req, res) => {
-  const { email, clientName, location, scannedAt, signature } = req.body;
+  const { email, clientName, location, scannedAt, signaturePath } = req.body;
 
   if (!email) {
     return res.status(400).json({ success: false, message: 'E-mail é obrigatório.' });
@@ -35,7 +49,15 @@ app.post('/', async (req, res) => {
     timeStyle: 'short',
   });
 
+  // Converte a imagem da assinatura para Base64
+  let signatureBase64 = null;
+  if (signaturePath) {
+    const absolutePath = path.resolve(signaturePath);
+    signatureBase64 = imageToBase64(absolutePath);
+  }
+
   try {
+    // Envio do e-mail
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
@@ -58,16 +80,16 @@ app.post('/', async (req, res) => {
               <td style="padding: 8px; border: 1px solid #ddd;">${formattedDateTime}</td>
             </tr>
           </table>
+          ${signatureBase64 ? `
+            <div style="margin-top: 20px;">
+              <p><strong>Assinatura do Técnico:</strong></p>
+              <img src="${signatureBase64}" alt="Assinatura" style="max-width: 300px; height: auto; display: block;" />
+            </div>
+          ` : ''}
           <p style="margin-top: 20px;">Agradecemos pela confiança em nossos serviços. Caso tenha dúvidas ou precise de mais informações, estamos à disposição.</p>
           <p>Atenciosamente,</p>
           <p style="color: #4CAF50;"><strong>Equipe Técnica</strong></p>
           <p><em>Este é um e-mail automático, por favor, não responda diretamente a esta mensagem.</em></p>
-          ${signature ? `
-            <div style="margin-top: 20px;">
-              <p><strong>Assinatura:</strong></p>
-              <img src="${signature}" alt="Assinatura" style="max-width: 300px; height: auto;" />
-            </div>
-          ` : ''}
         </div>
       `,
     });
