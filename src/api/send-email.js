@@ -41,30 +41,30 @@ app.post('/', async (req, res) => {
       to: email,
       subject: 'Visita Técnica Realizada',
       html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-          <p>Prezado(a) <strong>${clientName || 'Cliente'}</strong>,</p>
-          <p>Informamos que a visita técnica foi realizada com sucesso. Seguem os detalhes da visita:</p>
-          <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
-            <tr>
-              <td style="padding: 8px; border: 1px solid #ddd;"><strong>Nome do Cliente:</strong></td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${clientName || 'Nome não especificado'}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px; border: 1px solid #ddd;"><strong>Local:</strong></td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${location || 'Local não especificado'}</td>
-            </tr>
-            <tr>
-              <td style="padding: 8px; border: 1px solid #ddd;"><strong>Data e Hora:</strong></td>
-              <td style="padding: 8px; border: 1px solid #ddd;">${formattedDateTime}</td>
-            </tr>
-          </table>
-          <p style="margin-top: 20px;">Agradecemos pela confiança em nossos serviços. Caso tenha dúvidas ou precise de mais informações, estamos à disposição.</p>
-          <p>Atenciosamente,</p>
-          <p style="color: #4CAF50;"><strong>Equipe Técnica</strong></p>
-          <p><em>Este é um e-mail automático, por favor, não responda diretamente a esta mensagem.</em></p>
-          <div style="text-align: center; margin-top: 30px;">
+        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+          <div style="text-align: center; margin-bottom: 20px;">
             <img src="cid:companyLogo" alt="Logo da Empresa" style="width: 150px; height: auto;" />
           </div>
+          <p style="font-size: 16px; color: #333;">
+            Prezados(as),
+          </p>
+          <p style="font-size: 16px; color: #333;">
+            Informamos que a visita técnica para a empresa <strong>${clientName || 'Cliente'}</strong> foi realizada com sucesso. Seguem os detalhes da visita:
+          </p>
+          <p style="font-size: 16px; color: #333;">
+            <strong>Local:</strong> ${location || 'Local não especificado'}<br />
+            <strong>Data e Hora:</strong> ${formattedDateTime}
+          </p>
+          <p style="font-size: 16px; color: #333; margin-top: 20px;">
+            Agradecemos pela confiança em nossos serviços. Caso tenha dúvidas ou precise de mais informações, estamos à disposição.
+          </p>
+          <p style="font-size: 16px; color: #333; margin-top: 20px;">
+            Atenciosamente,<br />
+            <span style="color: #4CAF50; font-weight: bold;">Equipe Técnica</span>
+          </p>
+          <p style="font-size: 14px; color: #999; text-align: center; margin-top: 20px;">
+            <em>Este é um e-mail automático, por favor, não responda diretamente a esta mensagem.</em>
+          </p>
         </div>
       `,
       attachments: [
