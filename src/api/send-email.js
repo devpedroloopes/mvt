@@ -62,8 +62,18 @@ app.post('/', async (req, res) => {
           <p>Atenciosamente,</p>
           <p style="color: #4CAF50;"><strong>Equipe Técnica</strong></p>
           <p><em>Este é um e-mail automático, por favor, não responda diretamente a esta mensagem.</em></p>
+          <div style="text-align: center; margin-top: 30px;">
+            <img src="cid:companyLogo" alt="Logo da Empresa" style="width: 150px; height: auto;" />
+          </div>
         </div>
       `,
+      attachments: [
+        {
+          filename: 'logo.png',
+          path: '../../assets/logo.png', // Substitua pelo caminho real do arquivo da logo
+          cid: 'companyLogo', // Deve corresponder ao "cid" usado no HTML acima
+        },
+      ],
     });
 
     res.status(200).json({ success: true, message: 'E-mail enviado com sucesso!' });
