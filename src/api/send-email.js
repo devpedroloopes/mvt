@@ -15,17 +15,17 @@ app.use(bodyParser.json());
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: process.env.EMAIL_USER, // Gmail username
+    pass: process.env.EMAIL_PASS, // Gmail app password
   },
 });
 
 // API Routes
-app.post('/send-email', async (req, res) => {
+app.post('/', async (req, res) => {
   const { email, clientName, location, scannedAt, signatureUrl } = req.body;
 
-  if (!email || !signatureUrl) {
-    return res.status(400).json({ success: false, message: 'E-mail e assinatura são obrigatórios.' });
+  if (!email) {
+    return res.status(400).json({ success: false, message: 'E-mail é obrigatório.' });
   }
 
   const scanDateTime = scannedAt || new Date();
@@ -43,7 +43,7 @@ app.post('/send-email', async (req, res) => {
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <img src="cid:signatureImage" alt="Assinatura do Cliente" style="max-width: 100%; height: auto;" />
+            <img src="cid:companyLogo" alt="Logo da Empresa" style="width: 150px; height: auto;" />
           </div>
           <p style="font-size: 16px; color: #333;">
             Prezados(as),
@@ -69,9 +69,9 @@ app.post('/send-email', async (req, res) => {
       `,
       attachments: [
         {
-          filename: 'signature.png', // Nome do arquivo exibido no e-mail
-          path: signatureUrl, // URL remota da assinatura
-          cid: 'signatureImage', // CID para referenciar no HTML
+          filename: 'logo.png',
+          path: signatureUrl, // Caminho atualizado para o arquivo da logo
+          cid: 'companyLogo', // Deve corresponder ao "cid" usado no HTML acima
         },
       ],
     });
