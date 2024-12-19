@@ -70,7 +70,7 @@ app.post('/', async (req, res) => {
       attachments: [
         {
           filename: 'logo.png',
-          path: './assets/logo.png', // Caminho atualizado para o arquivo da logo
+          path: 'https://miacxmyvqaqjdgzpkmts.supabase.co/storage/v1/object/public/technician-signatures/igor.jpg', // Caminho atualizado para o arquivo da logo
           cid: 'companyLogo', // Deve corresponder ao "cid" usado no HTML acima
         },
       ],
