@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
-const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
@@ -21,12 +20,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Função para converter a imagem em Base64
-const convertImageToBase64 = (imagePath) => {
-  const image = fs.readFileSync(imagePath);
-  return image.toString('base64');
-};
-
 // API Routes
 app.post('/', async (req, res) => {
   const { email, clientName, location, scannedAt, signatureUrl } = req.body;
@@ -42,9 +35,6 @@ app.post('/', async (req, res) => {
     timeStyle: 'short',
   });
 
-  // Converter a imagem para Base64
-  const base64Image = convertImageToBase64(signatureUrl); // Assumindo que signatureUrl é o caminho da imagem
-
   try {
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
@@ -53,7 +43,7 @@ app.post('/', async (req, res) => {
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <img src="data:image/png;base64,${base64Image}" alt="Logo da Empresa" style="width: 150px; height: auto;" />
+            <img src="cid:companyLogo" alt="Logo da Empresa" style="width: 150px; height: auto;" />
           </div>
           <p style="font-size: 16px; color: #333;">
             Prezados(as),
@@ -77,6 +67,13 @@ app.post('/', async (req, res) => {
           </p>
         </div>
       `,
+      attachments: [
+        {
+          filename: 'logo.png',
+          path: signatureUrl, // Caminho atualizado para o arquivo da logo
+          cid: 'companyLogo', // Deve corresponder ao "cid" usado no HTML acima
+        },
+      ],
     });
 
     res.status(200).json({ success: true, message: 'E-mail enviado com sucesso!' });
