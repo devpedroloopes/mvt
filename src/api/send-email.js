@@ -15,17 +15,17 @@ app.use(bodyParser.json());
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER, // Gmail username
-    pass: process.env.EMAIL_PASS, // Gmail app password
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
 // API Routes
-app.post('/', async (req, res) => {
-  const { email, clientName, location, scannedAt } = req.body;
+app.post('/send-email', async (req, res) => {
+  const { email, clientName, location, scannedAt, signatureUrl } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ success: false, message: 'E-mail é obrigatório.' });
+  if (!email || !signatureUrl) {
+    return res.status(400).json({ success: false, message: 'E-mail e assinatura são obrigatórios.' });
   }
 
   const scanDateTime = scannedAt || new Date();
@@ -43,7 +43,7 @@ app.post('/', async (req, res) => {
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <img src="../../assets/logo.png" alt="Logo da Empresa" style="width: 150px; height: auto;" />
+            <img src="cid:signatureImage" alt="Assinatura do Cliente" style="max-width: 100%; height: auto;" />
           </div>
           <p style="font-size: 16px; color: #333;">
             Prezados(as),
@@ -66,7 +66,14 @@ app.post('/', async (req, res) => {
             <em>Este é um e-mail automático, por favor, não responda diretamente a esta mensagem.</em>
           </p>
         </div>
-      `
+      `,
+      attachments: [
+        {
+          filename: 'signature.png', // Nome do arquivo exibido no e-mail
+          path: signatureUrl, // URL remota da assinatura
+          cid: 'signatureImage', // CID para referenciar no HTML
+        },
+      ],
     });
 
     res.status(200).json({ success: true, message: 'E-mail enviado com sucesso!' });
