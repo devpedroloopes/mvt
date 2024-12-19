@@ -43,7 +43,7 @@ app.post('/', async (req, res) => {
       html: `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
           <div style="text-align: center; margin-bottom: 20px;">
-            <img src="cid:companyLogo" alt="Logo da Empresa" style="width: 150px; height: auto;" />
+            <img src="../../assets/logo.png" alt="Logo da Empresa" style="width: 150px; height: auto;" />
           </div>
           <p style="font-size: 16px; color: #333;">
             Prezados(as),
@@ -66,14 +66,7 @@ app.post('/', async (req, res) => {
             <em>Este é um e-mail automático, por favor, não responda diretamente a esta mensagem.</em>
           </p>
         </div>
-      `,
-      attachments: [
-        {
-          filename: 'logo.png',
-          path: 'https://miacxmyvqaqjdgzpkmts.supabase.co/storage/v1/object/public/technician-signatures/igor.jpg', // Caminho atualizado para o arquivo da logo
-          cid: 'companyLogo', // Deve corresponder ao "cid" usado no HTML acima
-        },
-      ],
+      `
     });
 
     res.status(200).json({ success: true, message: 'E-mail enviado com sucesso!' });
