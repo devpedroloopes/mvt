@@ -29,10 +29,20 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#333"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.devpedroloopes.mvt"
     },
     "web": {
       "favicon": "./assets/logo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a6dc38d3-2139-4322-ba08-cca55df37101"
+      }
     }
   }
 }
