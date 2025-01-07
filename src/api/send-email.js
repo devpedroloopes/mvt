@@ -70,7 +70,7 @@ app.post('/', async (req, res) => {
         `,
         attachments: [
           {
-            filename: 'logo.png',
+            filename: '../../assets/logo.png',
             path: signatureUrl,
             cid: 'companyLogo',
           },
