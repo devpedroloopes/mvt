@@ -30,7 +30,7 @@ const LoginScreen = ({ navigation }: any) => {
     // Verifica as credenciais no banco de dados do Supabase
     const { data, error } = await supabase
       .from('mvt') // A tabela onde os usuários estão armazenados
-      .select('username, password, signature') // Inclui a coluna signature
+      .select('username, password') // Remove a coluna signature
       .eq('username', username) // Verifica se o username bate
       .eq('password', password)
       .single(); 
@@ -40,8 +40,8 @@ const LoginScreen = ({ navigation }: any) => {
     if (error || !data) {
       showErrorMessage('Credenciais inválidas');
     } else {
-      // Navega para a tela inicial, passando a assinatura como parâmetro
-      navigation.navigate('Home', { signature: data.signature });
+      // Navega para a tela inicial
+      navigation.navigate('Home');
     }
   };
 
