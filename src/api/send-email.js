@@ -24,8 +24,8 @@ const transporter = nodemailer.createTransport({
 app.post('/', async (req, res) => {
   const { email, clientName, location, scannedAt, signatureUrl } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ success: false, message: 'E-mail é obrigatório.' });
+  if (!email || !Array.isArray(email) || email.length === 0) {
+    return res.status(400).json({ success: false, message: 'E-mails são obrigatórios e devem ser uma lista.' });
   }
 
   const scanDateTime = scannedAt || new Date();
@@ -36,47 +36,49 @@ app.post('/', async (req, res) => {
   });
 
   try {
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: 'Visita Técnica Realizada',
-      html: `
-        <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-          <div style="text-align: center; margin-bottom: 20px;">
-            <img src="cid:companyLogo" alt="Logo da Empresa" style="width: 150px; height: auto;" />
+    for (const recipient of email) {
+      await transporter.sendMail({
+        from: process.env.EMAIL_USER,
+        to: recipient,
+        subject: 'Visita Técnica Realizada',
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <img src="cid:companyLogo" alt="Logo da Empresa" style="width: 150px; height: auto;" />
+            </div>
+            <p style="font-size: 16px; color: #333;">
+              Prezados(as),
+            </p>
+            <p style="font-size: 16px; color: #333;">
+              Informamos que a visita técnica para a empresa <strong>${clientName || 'Cliente'}</strong> foi realizada com sucesso. Seguem os detalhes da visita:
+            </p>
+            <p style="font-size: 16px; color: #333;">
+              <strong>Local:</strong> ${location || 'Local não especificado'}<br />
+              <strong>Data e Hora:</strong> ${formattedDateTime}
+            </p>
+            <p style="font-size: 16px; color: #333; margin-top: 20px;">
+              Agradecemos pela confiança em nossos serviços. Caso tenha dúvidas ou precise de mais informações, estamos à disposição.
+            </p>
+            <p style="font-size: 16px; color: #333; margin-top: 20px;">
+              Atenciosamente,<br />
+              <span style="color: #4CAF50; font-weight: bold;">Equipe Técnica</span>
+            </p>
+            <p style="font-size: 14px; color: #999; text-align: center; margin-top: 20px;">
+              <em>Este é um e-mail automático, por favor, não responda diretamente a esta mensagem.</em>
+            </p>
           </div>
-          <p style="font-size: 16px; color: #333;">
-            Prezados(as),
-          </p>
-          <p style="font-size: 16px; color: #333;">
-            Informamos que a visita técnica para a empresa <strong>${clientName || 'Cliente'}</strong> foi realizada com sucesso. Seguem os detalhes da visita:
-          </p>
-          <p style="font-size: 16px; color: #333;">
-            <strong>Local:</strong> ${location || 'Local não especificado'}<br />
-            <strong>Data e Hora:</strong> ${formattedDateTime}
-          </p>
-          <p style="font-size: 16px; color: #333; margin-top: 20px;">
-            Agradecemos pela confiança em nossos serviços. Caso tenha dúvidas ou precise de mais informações, estamos à disposição.
-          </p>
-          <p style="font-size: 16px; color: #333; margin-top: 20px;">
-            Atenciosamente,<br />
-            <span style="color: #4CAF50; font-weight: bold;">Equipe Técnica</span>
-          </p>
-          <p style="font-size: 14px; color: #999; text-align: center; margin-top: 20px;">
-            <em>Este é um e-mail automático, por favor, não responda diretamente a esta mensagem.</em>
-          </p>
-        </div>
-      `,
-      attachments: [
-        {
-          filename: 'logo.png',
-          path: signatureUrl, // Caminho atualizado para o arquivo da logo
-          cid: 'companyLogo', // Deve corresponder ao "cid" usado no HTML acima
-        },
-      ],
-    });
+        `,
+        attachments: [
+          {
+            filename: 'logo.png',
+            path: signatureUrl,
+            cid: 'companyLogo',
+          },
+        ],
+      });
+    }
 
-    res.status(200).json({ success: true, message: 'E-mail enviado com sucesso!' });
+    res.status(200).json({ success: true, message: 'E-mails enviados com sucesso!' });
   } catch (error) {
     console.error('Erro ao enviar o e-mail:', error);
     res.status(500).json({ success: false, message: 'Erro ao enviar o e-mail.' });

@@ -7,7 +7,7 @@ import axios from 'axios';
 export default function Home() {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
-  const [email, setEmail] = useState<string | null>(null);
+  const [email, setEmail] = useState<string[] | null>(null);
   const [clientName, setClientName] = useState<string | null>(null);
   const [location, setLocation] = useState<string | null>(null);
   const [emailSent, setEmailSent] = useState(false);
@@ -34,17 +34,26 @@ export default function Home() {
     const lines = data.split(/\r?\n/);
     const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
-    const possibleEmail = lines[0]?.trim();
+    const possibleEmails = lines[0]?.trim();
     const possibleClientName = lines[1]?.trim();
     const possibleLocation = lines[2]?.trim();
 
-    if (!emailRegex.test(possibleEmail)) {
-      Alert.alert('Erro', 'Código QR inválido, não contém um e-mail válido na primeira linha.');
+    if (!possibleEmails) {
+      Alert.alert('Erro', 'Código QR inválido, não contém e-mails.');
+      return;
+    }
+
+    // Separar e-mails e validar
+    const emails = possibleEmails.split(';').map((email) => email.trim());
+    const invalidEmails = emails.filter((email) => !emailRegex.test(email));
+
+    if (invalidEmails.length > 0) {
+      Alert.alert('Erro', `Os seguintes e-mails são inválidos: ${invalidEmails.join(', ')}`);
       return;
     }
 
     qrCodeLock.current = true;
-    setEmail(possibleEmail);
+    setEmail(emails); // Salvar como array
     setClientName(possibleClientName || 'Nome não especificado');
     setLocation(possibleLocation || 'Local não especificado');
     setModalIsVisible(false);
@@ -60,7 +69,7 @@ export default function Home() {
 
     try {
       const response = await axios.post(`${API_URL}`, {
-        email,
+        email, // Enviar como array
         clientName,
         location,
       });
