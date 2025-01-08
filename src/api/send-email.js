@@ -40,31 +40,32 @@ app.post('/', async (req, res) => {
       await transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: recipient,
-        subject: 'Visita Técnica Realizada',
+        subject: 'Aviso de Visita Técnica Realizada - Conforlab',
         html: `
           <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-            <div style="text-align: center; margin-bottom: 20px;">
-              <img src="https://raw.githubusercontent.com/devpedroloopes/imagens-conforlab/main/logoConforlab.png" alt="Logo da Conforlab" style="width: 150px; height: auto;" />
-            </div>
-            <p style="font-size: 16px; color: #333;">
-              Prezados(as),
+            <p style="font-size: 18px; color: #4CAF50; font-weight: bold; text-align: center;">
+              Conforlab - Qualidade em Serviços Técnicos
+            </p>
+            <p style="font-size: 16px; color: #333; margin-top: 20px;">
+              Prezado(a) cliente,
             </p>
             <p style="font-size: 16px; color: #333;">
-              Informamos que a visita técnica para a empresa <strong>${clientName || 'Cliente'}</strong> foi realizada com sucesso. Seguem os detalhes da visita:
+              Informamos que nossa equipe técnica da <span style="color: #4CAF50; font-weight: bold;">Conforlab</span> realizou a visita técnica conforme solicitado. Seguem os detalhes:
             </p>
             <p style="font-size: 16px; color: #333;">
+              <strong>Cliente:</strong> ${clientName || 'Cliente não informado'}<br />
               <strong>Local:</strong> ${location || 'Local não especificado'}<br />
               <strong>Data e Hora:</strong> ${formattedDateTime}
             </p>
             <p style="font-size: 16px; color: #333; margin-top: 20px;">
-              Agradecemos pela confiança em nossos serviços. Caso tenha dúvidas ou precise de mais informações, estamos à disposição.
+              Agradecemos pela confiança em nossa equipe. Caso precise de mais informações ou tenha alguma dúvida, estamos à disposição.
             </p>
             <p style="font-size: 16px; color: #333; margin-top: 20px;">
               Atenciosamente,<br />
-              <span style="color: #4CAF50; font-weight: bold;">Equipe Técnica</span>
+              <span style="color: #4CAF50; font-weight: bold;">Equipe Conforlab</span>
             </p>
             <p style="font-size: 14px; color: #999; text-align: center; margin-top: 20px;">
-              <em>Este é um e-mail automático, por favor, não responda diretamente a esta mensagem.</em>
+              <em>Este é um e-mail automático. Por favor, não responda diretamente a esta mensagem.</em>
             </p>
           </div>
         `,
