@@ -70,7 +70,7 @@ app.post('/', async (req, res) => {
         `,
         attachments: [
           {
-            filename: '../../assets/logo.png',
+            filename: 'https://imgur.com/a/xZOGRVN',
             path: signatureUrl,
             cid: 'companyLogo',
           },
