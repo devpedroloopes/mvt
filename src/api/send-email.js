@@ -44,7 +44,7 @@ app.post('/', async (req, res) => {
         html: `
           <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
             <div style="text-align: center; margin-bottom: 20px;">
-              <img src="cid:companyLogo" alt="Logo da Empresa" style="width: 150px; height: auto;" />
+              <img src="https://raw.githubusercontent.com/devpedroloopes/imagens-conforlab/main/logoConforlab.png" alt="Logo da Conforlab" style="width: 150px; height: auto;" />
             </div>
             <p style="font-size: 16px; color: #333;">
               Prezados(as),
@@ -68,13 +68,6 @@ app.post('/', async (req, res) => {
             </p>
           </div>
         `,
-        attachments: [
-          {
-            filename: 'https://imgur.com/a/xZOGRVN',
-            path: signatureUrl,
-            cid: 'companyLogo',
-          },
-        ],
       });
     }
 
