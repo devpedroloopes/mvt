@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,22 +11,19 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Configuração do Nodemailer para o servidor SMTP
+// Nodemailer Transporter
 const transporter = nodemailer.createTransport({
-  host: 'email-ssl.com.br', // Servidor SMTP de saída
-  port: 465, // Porta para SSL
-  secure: true, // Usar SSL
+  service: 'gmail',
   auth: {
-    user: 'info@conforlab.com.br', // Seu e-mail corporativo
-    pass: 'Conforl@b123', // Sua senha ou senha configurada
+    user: process.env.EMAIL_USER, // Gmail username
+    pass: process.env.EMAIL_PASS, // Gmail app password
   },
 });
 
-// Rota para enviar e-mails
-app.post('/send-email', async (req, res) => {
-  const { email, clientName, location, scannedAt } = req.body;
+// API Routes
+app.post('/', async (req, res) => {
+  const { email, clientName, location, scannedAt, signatureUrl } = req.body;
 
-  // Validar os dados recebidos
   if (!email || !Array.isArray(email) || email.length === 0) {
     return res.status(400).json({ success: false, message: 'E-mails são obrigatórios e devem ser uma lista.' });
   }
@@ -40,8 +38,8 @@ app.post('/send-email', async (req, res) => {
   try {
     for (const recipient of email) {
       await transporter.sendMail({
-        from: 'info@conforlab.com.br', // Remetente
-        to: recipient, // Destinatário
+        from: process.env.EMAIL_USER,
+        to: recipient,
         subject: 'Aviso de Visita Técnica Realizada - Conforlab',
         html: `
           <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
@@ -81,7 +79,7 @@ app.post('/send-email', async (req, res) => {
   }
 });
 
-// Iniciar servidor
+// Start server
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
