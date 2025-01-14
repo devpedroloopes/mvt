@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,22 +11,21 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Configuração do Nodemailer para o servidor SMTP
+// Nodemailer Transporter (configurado para o Outlook)
 const transporter = nodemailer.createTransport({
-  host: 'email-ssl.com.br', // Servidor SMTP de saída
+  host: 'email-ssl.com.br', // Servidor de saída (SMTP)
   port: 465, // Porta para SSL
-  secure: true, // Usar SSL
+  secure: true, // Conexão segura SSL
   auth: {
-    user: 'info@conforlab.com.br', // Seu e-mail corporativo
-    pass: 'iNFlps@0##24', // Sua senha ou senha configurada
+    user: process.env.EMAIL_USER, // Seu e-mail corporativo (configurado no .env)
+    pass: process.env.EMAIL_PASS, // Sua senha (ou senha de aplicativo)
   },
 });
 
-// Rota para enviar e-mails
-app.post('/send-email', async (req, res) => {
-  const { email, clientName, location, scannedAt } = req.body;
+// API Routes
+app.post('/', async (req, res) => {
+  const { email, clientName, location, scannedAt, signatureUrl } = req.body;
 
-  // Validar os dados recebidos
   if (!email || !Array.isArray(email) || email.length === 0) {
     return res.status(400).json({ success: false, message: 'E-mails são obrigatórios e devem ser uma lista.' });
   }
@@ -40,7 +40,7 @@ app.post('/send-email', async (req, res) => {
   try {
     for (const recipient of email) {
       await transporter.sendMail({
-        from: 'info@conforlab.com.br', // Remetente
+        from: process.env.EMAIL_USER, // Endereço do remetente
         to: recipient, // Destinatário
         subject: 'Aviso de Visita Técnica Realizada - Conforlab',
         html: `
@@ -81,7 +81,7 @@ app.post('/send-email', async (req, res) => {
   }
 });
 
-// Iniciar servidor
+// Start server
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
