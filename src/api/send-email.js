@@ -33,7 +33,7 @@ app.post('/', async (req, res) => {
   const scanDateTime = scannedAt || new Date();
   const formattedDateTime = new Intl.DateTimeFormat('pt-BR', {
     timeZone: 'America/Sao_Paulo',
-    dateStyle: 'full',
+    dateStyle: 'long',
     timeStyle: 'short',
   }).format(new Date(scanDateTime));
 
@@ -49,7 +49,7 @@ app.post('/', async (req, res) => {
           font-family: Arial, sans-serif;
           line-height: 1.6;
           color: #333;
-          background-color: #f7f7f7;
+          background-color: #ffffff;
           margin: 0;
           padding: 20px;
         }
@@ -57,29 +57,30 @@ app.post('/', async (req, res) => {
           max-width: 600px;
           margin: 20px auto;
           background: #ffffff;
-          border-radius: 8px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
           padding: 20px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .email-header {
           text-align: center;
           margin-bottom: 20px;
         }
         .email-header h1 {
-          font-size: 24px;
+          font-size: 20px;
           color: #0056b3;
         }
         .email-body {
-          font-size: 16px;
+          font-size: 14px;
           color: #333;
         }
         .email-body p {
-          margin: 15px 0;
+          margin: 10px 0;
         }
         .email-footer {
           margin-top: 20px;
-          font-size: 14px;
-          color: #777;
+          font-size: 12px;
+          color: #555;
+          text-align: left;
           border-top: 1px solid #ddd;
           padding-top: 10px;
         }
@@ -88,16 +89,16 @@ app.post('/', async (req, res) => {
     <body>
       <div class="email-container">
         <div class="email-header">
-          <h1>Aviso de Visita Realizada</h1>
+          <h1>Conforlab - Aviso de Visita Realizada</h1>
         </div>
         <div class="email-body">
           <p>Prezado(a) <strong>${clientName || 'Cliente'}</strong>,</p>
-          <p>Temos o prazer de informar que nossa equipe técnica realizou a visita programada ao local indicado. Durante a visita, foram realizadas as ações necessárias para atender às suas solicitações, garantindo a qualidade e o profissionalismo que você espera da Conforlab.</p>
-          <p>Detalhes da Visita:</p>
+          <p>Informamos que nossa equipe técnica concluiu a visita ao local indicado. Agradecemos pela confiança em nossos serviços e reiteramos nosso compromisso com a excelência.</p>
+          <p><strong>Detalhes da Visita:</strong></p>
           <p><strong>Local:</strong> ${location || 'Não especificado'}</p>
           <p><strong>Data e Hora:</strong> ${formattedDateTime}</p>
-          <p><strong>Técnico Responsável:</strong> ${username || 'Não identificado'}</p>
-          <p>Este e-mail é informativo e não requer resposta. Caso tenha dúvidas ou precise de mais informações, nossa equipe está à disposição para atendê-lo.</p>
+          <p><strong>Técnico:</strong> ${username || 'Não identificado'}</p>
+          <p>Este e-mail é automático e não requer resposta. Em caso de dúvidas, nossa equipe está à disposição para atendê-lo.</p>
         </div>
         <div class="email-footer">
           <p>Atenciosamente,</p>
