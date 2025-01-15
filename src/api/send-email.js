@@ -49,45 +49,59 @@ app.post('/', async (req, res) => {
           font-family: Arial, sans-serif;
           line-height: 1.6;
           color: #333;
-          background-color: #f4f4f4;
+          background-color: #f7f7f7;
           margin: 0;
           padding: 20px;
         }
         .email-container {
           max-width: 600px;
           margin: 20px auto;
-          background: #fff;
-          border-radius: 6px;
+          background: #ffffff;
+          border-radius: 8px;
           padding: 20px;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .email-header {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        .email-header h1 {
+          font-size: 24px;
+          color: #0056b3;
         }
         .email-body {
-          margin-top: 20px;
+          font-size: 16px;
+          color: #333;
         }
         .email-body p {
-          margin: 10px 0;
-          font-size: 16px;
+          margin: 15px 0;
         }
         .email-footer {
           margin-top: 20px;
           font-size: 14px;
           color: #777;
+          border-top: 1px solid #ddd;
+          padding-top: 10px;
         }
       </style>
     </head>
     <body>
       <div class="email-container">
+        <div class="email-header">
+          <h1>Aviso de Visita Realizada</h1>
+        </div>
         <div class="email-body">
           <p>Prezado(a) <strong>${clientName || 'Cliente'}</strong>,</p>
-          <p>Informamos que a visita técnica ao local indicado foi realizada com sucesso. Seguem os detalhes:</p>
+          <p>Temos o prazer de informar que nossa equipe técnica realizou a visita programada ao local indicado. Durante a visita, foram realizadas as ações necessárias para atender às suas solicitações, garantindo a qualidade e o profissionalismo que você espera da Conforlab.</p>
+          <p>Detalhes da Visita:</p>
           <p><strong>Local:</strong> ${location || 'Não especificado'}</p>
           <p><strong>Data e Hora:</strong> ${formattedDateTime}</p>
-          <p><strong>Técnico:</strong> ${username || 'Não identificado'}</p>
-          <p>Este é um e-mail automático, favor não responder.</p>
+          <p><strong>Técnico Responsável:</strong> ${username || 'Não identificado'}</p>
+          <p>Este e-mail é informativo e não requer resposta. Caso tenha dúvidas ou precise de mais informações, nossa equipe está à disposição para atendê-lo.</p>
         </div>
         <div class="email-footer">
           <p>Atenciosamente,</p>
-          <p><strong>[Nome da Sua Empresa]</strong></p>
+          <p>Equipe Conforlab</p>
           <p>[Informações de Contato]</p>
         </div>
       </div>
