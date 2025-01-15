@@ -31,11 +31,11 @@ app.post('/', async (req, res) => {
   }
 
   const scanDateTime = scannedAt || new Date();
-  const formattedDateTime = scanDateTime.toLocaleString('pt-BR', {
+  const formattedDateTime = new Intl.DateTimeFormat('pt-BR', {
     timeZone: 'America/Sao_Paulo',
-    dateStyle: 'short',
+    dateStyle: 'full',
     timeStyle: 'short',
-  });
+  }).format(new Date(scanDateTime));
 
   const emailHtml = `
     <!DOCTYPE html>
@@ -43,54 +43,40 @@ app.post('/', async (req, res) => {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Relatório de Visita Técnica</title>
+      <title>Aviso de Visita Realizada</title>
       <style>
         body {
           font-family: Arial, sans-serif;
           line-height: 1.6;
           color: #333;
-          background-color: #f4f4f9;
+          background-color: #f9f9f9;
           margin: 0;
           padding: 0;
         }
         .email-container {
           max-width: 600px;
           margin: 20px auto;
-          background: #ffffff;
-          border-radius: 8px;
-          overflow: hidden;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          background: #fff;
+          border-radius: 6px;
+          padding: 20px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .email-header {
-          background: #4CAF50;
-          color: #ffffff;
           text-align: center;
-          padding: 20px;
+          padding-bottom: 20px;
+          border-bottom: 1px solid #ddd;
         }
         .email-header h1 {
+          font-size: 20px;
           margin: 0;
-          font-size: 24px;
+          color: #4CAF50;
         }
         .email-body {
-          padding: 20px;
+          margin-top: 20px;
         }
         .email-body p {
           margin: 10px 0;
           font-size: 16px;
-        }
-        .email-table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 20px;
-        }
-        .email-table th, .email-table td {
-          text-align: left;
-          padding: 10px;
-          border-bottom: 1px solid #dddddd;
-        }
-        .email-table th {
-          background-color: #f4f4f9;
-          font-weight: bold;
         }
         .email-footer {
           margin-top: 20px;
@@ -98,39 +84,20 @@ app.post('/', async (req, res) => {
           font-size: 14px;
           color: #777;
         }
-        .email-footer p {
-          margin: 5px 0;
-        }
       </style>
     </head>
     <body>
       <div class="email-container">
         <div class="email-header">
-          <h1>Relatório de Visita Técnica</h1>
+          <h1>Aviso de Visita Realizada</h1>
         </div>
         <div class="email-body">
           <p>Prezado(a) <strong>${clientName || 'Cliente'}</strong>,</p>
-          <p>Gostaríamos de informar que a visita técnica programada foi realizada com sucesso. Seguem os detalhes da visita:</p>
-          <table class="email-table">
-            <tr>
-              <th>Cliente</th>
-              <td>${clientName || 'Não especificado'}</td>
-            </tr>
-            <tr>
-              <th>Localização</th>
-              <td>${location || 'Não especificado'}</td>
-            </tr>
-            <tr>
-              <th>Data e Hora da Visita</th>
-              <td>${formattedDateTime}</td>
-            </tr>
-            <tr>
-              <th>Visitante Técnico</th>
-              <td>${username || 'Visitante não identificado'}</td>
-            </tr>
-          </table>
-          <p>Se houver alguma dúvida ou necessidade de esclarecimentos adicionais, não hesite em nos contatar.</p>
-          <p>Agradecemos pela confiança em nossos serviços e permanecemos à disposição para futuros atendimentos.</p>
+          <p>Informamos que a visita técnica ao local indicado foi realizada com sucesso. Seguem os detalhes:</p>
+          <p><strong>Local:</strong> ${location || 'Não especificado'}</p>
+          <p><strong>Data e Hora:</strong> ${formattedDateTime}</p>
+          <p><strong>Visitante Técnico:</strong> ${username || 'Não identificado'}</p>
+          <p>Estamos à disposição para quaisquer dúvidas ou informações adicionais.</p>
         </div>
         <div class="email-footer">
           <p>Atenciosamente,</p>
@@ -146,7 +113,7 @@ app.post('/', async (req, res) => {
       await transporter.sendMail({
         from: process.env.EMAIL_USER, // Endereço do remetente
         to: recipient, // Destinatário
-        subject: `Relatório de Visita Técnica - ${clientName || 'Local não especificado'}`, // Assunto
+        subject: `Aviso de Visita Realizada - ${clientName || 'Local não especificado'}`, // Assunto
         html: emailHtml,
       });
     }
