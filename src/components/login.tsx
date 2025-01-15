@@ -41,7 +41,7 @@ const LoginScreen = ({ navigation }: any) => {
       showErrorMessage('Credenciais inválidas');
     } else {
       // Navega para a tela inicial
-      navigation.navigate('Home');
+      navigation.navigate('Home', { username: data.username });
     }
   };
 

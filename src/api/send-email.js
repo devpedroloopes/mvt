@@ -24,7 +24,7 @@ const transporter = nodemailer.createTransport({
 
 // API Routes
 app.post('/', async (req, res) => {
-  const { email, clientName, location, scannedAt, signatureUrl } = req.body;
+  const { email, clientName, location, scannedAt, username } = req.body;
 
   if (!email || !Array.isArray(email) || email.length === 0) {
     return res.status(400).json({ success: false, message: 'E-mails são obrigatórios e devem ser uma lista.' });
@@ -42,46 +42,66 @@ app.post('/', async (req, res) => {
       await transporter.sendMail({
         from: process.env.EMAIL_USER, // Endereço do remetente
         to: recipient, // Destinatário
-        subject: 'Aviso de Visita Técnica Realizada - Conforlab',
+        subject: `Relatório de Visita Técnica - ${clientName || 'Local não especificado'}`, // Assunto
+        text: `Prezado(a) ${clientName || 'Cliente'},
+
+Gostaríamos de informar que a visita técnica programada foi realizada com sucesso. Seguem os detalhes da visita:
+
+Cliente: ${clientName || 'Não especificado'}
+Localização: ${location || 'Não especificado'}
+Data e Hora da Visita: ${formattedDateTime}
+Visitante Técnico: ${username || 'Visitante não identificado'}
+
+Se houver alguma dúvida ou necessidade de esclarecimentos adicionais, não hesite em nos contatar.
+
+Agradecemos pela confiança em nossos serviços e permanecemos à disposição para futuros atendimentos.
+
+Atenciosamente,
+[Nome da Sua Empresa]
+[Informações de Contato]`,
+
         html: `
-          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-            <p style="font-size: 18px; color: #4CAF50; font-weight: bold; text-align: center;">
-              Conforlab - Qualidade em Serviços Técnicos
-            </p>
-            <p style="font-size: 16px; color: #333; margin-top: 20px;">
-              Prezado(a) cliente,
-            </p>
-            <p style="font-size: 16px; color: #333;">
-              Informamos que nossa equipe técnica da <span style="color: #4CAF50; font-weight: bold;">Conforlab</span> realizou a visita técnica conforme solicitado. Seguem os detalhes:
-            </p>
-            <p style="font-size: 16px; color: #333;">
-              <strong>Cliente:</strong> ${clientName || 'Cliente não informado'}<br />
-              <strong>Local:</strong> ${location || 'Local não especificado'}<br />
-              <strong>Data e Hora:</strong> ${formattedDateTime}
-            </p>
-            <p style="font-size: 16px; color: #333; margin-top: 20px;">
-              Agradecemos pela confiança em nossa equipe. Caso precise de mais informações ou tenha alguma dúvida, estamos à disposição.
-            </p>
-            <p style="font-size: 16px; color: #333; margin-top: 20px;">
-              Atenciosamente,<br />
-              <span style="color: #4CAF50; font-weight: bold;">Equipe Conforlab</span>
-            </p>
-            <p style="font-size: 14px; color: #999; text-align: center; margin-top: 20px;">
-              <em>Este é um e-mail automático. Por favor, não responda diretamente a esta mensagem.</em>
-            </p>
-          </div>
+          <h2>Relatório de Visita Técnica</h2>
+          <p><strong>Prezado(a) ${clientName || 'Cliente'},</strong></p>
+          <p>Gostaríamos de informar que a visita técnica programada foi realizada com sucesso. Seguem os detalhes da visita:</p>
+
+          <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <tr>
+              <td><strong>Cliente:</strong></td>
+              <td>${clientName || 'Não especificado'}</td>
+            </tr>
+            <tr>
+              <td><strong>Localização:</strong></td>
+              <td>${location || 'Não especificado'}</td>
+            </tr>
+            <tr>
+              <td><strong>Data e Hora da Visita:</strong></td>
+              <td>${formattedDateTime}</td>
+            </tr>
+            <tr>
+              <td><strong>Visitante Técnico:</strong></td>
+              <td>${username || 'Visitante não identificado'}</td>
+            </tr>
+          </table>
+
+          <p style="margin-top: 20px;">Se houver alguma dúvida ou necessidade de esclarecimentos adicionais, não hesite em nos contatar.</p>
+
+          <p>Agradecemos pela confiança em nossos serviços e permanecemos à disposição para futuros atendimentos.</p>
+
+          <p>Atenciosamente,<br />
+          [Nome da Sua Empresa]<br />
+          [Informações de Contato]</p>
         `,
       });
     }
-
-    res.status(200).json({ success: true, message: 'E-mails enviados com sucesso!' });
+    res.json({ success: true, message: 'E-mail enviado com sucesso!' });
   } catch (error) {
-    console.error('Erro ao enviar o e-mail:', error);
+    console.error(error);
     res.status(500).json({ success: false, message: 'Erro ao enviar o e-mail.' });
   }
 });
 
-// Start server
+// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });

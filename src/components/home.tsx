@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, Modal, TouchableOpacity, Alert } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import axios from 'axios';
 
-export default function Home() {
+export default function Home({ route }: any) {
   const [modalIsVisible, setModalIsVisible] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const [email, setEmail] = useState<string[] | null>(null);
@@ -13,7 +13,15 @@ export default function Home() {
   const [emailSent, setEmailSent] = useState(false);
   const qrCodeLock = useRef(false);
 
+  const { username } = route.params; // Pega o username enviado pela tela de login
+
   const API_URL = 'https://mvt-al9m.onrender.com';
+
+  useEffect(() => {
+    if (username) {
+      console.log('Usuário logado:', username);
+    }
+  }, [username]);
 
   async function handleOpenCamera() {
     try {
@@ -72,6 +80,8 @@ export default function Home() {
         email, // Enviar como array
         clientName,
         location,
+        scannedAt: new Date(),
+        username, // Passando o nome do usuário logado
       });
 
       if (!response.data.success) {
