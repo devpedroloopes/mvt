@@ -49,9 +49,9 @@ app.post('/', async (req, res) => {
           font-family: Arial, sans-serif;
           line-height: 1.6;
           color: #333;
-          background-color: #f9f9f9;
+          background-color: #f4f4f4;
           margin: 0;
-          padding: 0;
+          padding: 20px;
         }
         .email-container {
           max-width: 600px;
@@ -60,16 +60,6 @@ app.post('/', async (req, res) => {
           border-radius: 6px;
           padding: 20px;
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .email-header {
-          text-align: center;
-          padding-bottom: 20px;
-          border-bottom: 1px solid #ddd;
-        }
-        .email-header h1 {
-          font-size: 20px;
-          margin: 0;
-          color: #4CAF50;
         }
         .email-body {
           margin-top: 20px;
@@ -80,7 +70,6 @@ app.post('/', async (req, res) => {
         }
         .email-footer {
           margin-top: 20px;
-          text-align: center;
           font-size: 14px;
           color: #777;
         }
@@ -88,16 +77,13 @@ app.post('/', async (req, res) => {
     </head>
     <body>
       <div class="email-container">
-        <div class="email-header">
-          <h1>Aviso de Visita Realizada</h1>
-        </div>
         <div class="email-body">
           <p>Prezado(a) <strong>${clientName || 'Cliente'}</strong>,</p>
           <p>Informamos que a visita técnica ao local indicado foi realizada com sucesso. Seguem os detalhes:</p>
           <p><strong>Local:</strong> ${location || 'Não especificado'}</p>
           <p><strong>Data e Hora:</strong> ${formattedDateTime}</p>
-          <p><strong>Visitante Técnico:</strong> ${username || 'Não identificado'}</p>
-          <p>Estamos à disposição para quaisquer dúvidas ou informações adicionais.</p>
+          <p><strong>Técnico:</strong> ${username || 'Não identificado'}</p>
+          <p>Este é um e-mail automático, favor não responder.</p>
         </div>
         <div class="email-footer">
           <p>Atenciosamente,</p>
