@@ -132,7 +132,7 @@ app.post('/', async (req, res) => {
     <div class="email-footer">
       <p>Atenciosamente,</p>
       <p><strong>Equipe Conforlab</strong></p>
-      <p>📞 Telefone: (00) 1234-5678 | ✉️ E-mail: suporte@conforlab.com.br</p>
+      <p>📞 Telefone: (11) 5094-6280 | ✉️ E-mail: tratamento@conforlab.com.br</p>
       <p>🌐 Site: <a href="https://www.conforlab.com.br" style="color: #0056b3; text-decoration: none;">www.conforlab.com.br</a></p>
     </div>
   </div>
