@@ -55,24 +55,22 @@ app.post('/', async (req, res) => {
     .email-container {
       max-width: 600px;
       margin: 20px auto;
-      background: #ffffff;
-      border: 1px solid #dddddd;
+      padding: 20px;
+      border: 1px solid #dddddd; /* Borda externa única */
       border-radius: 8px;
-      overflow: hidden;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
     .email-header {
-      background-color: #0056b3;
-      color: #ffffff;
       text-align: center;
-      padding: 20px;
+      padding: 10px 0;
     }
     .email-header h1 {
-      font-size: 22px;
+      font-size: 20px;
+      color: #0056b3;
       margin: 0;
     }
     .email-body {
-      padding: 20px;
+      padding: 10px 0;
     }
     .email-body p {
       margin: 10px 0;
@@ -85,11 +83,7 @@ app.post('/', async (req, res) => {
       margin-top: 20px;
     }
     .email-body .details {
-      margin: 10px 0 20px;
-      padding: 10px;
-      background-color: #f9f9f9;
-      border: 1px solid #dddddd;
-      border-radius: 4px;
+      margin: 10px 0;
     }
     .email-body .details p {
       margin: 5px 0;
@@ -103,7 +97,7 @@ app.post('/', async (req, res) => {
     }
     .email-footer {
       text-align: center;
-      padding: 15px;
+      padding: 10px 0;
       font-size: 14px;
       color: #555555;
     }
