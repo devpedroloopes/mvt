@@ -38,76 +38,108 @@ app.post('/', async (req, res) => {
   }).format(new Date(scanDateTime));
 
   const emailHtml = `
-    <!DOCTYPE html>
-    <html lang="pt-BR">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Aviso de Visita Realizada</title>
-      <style>
-        body {
-          font-family: Arial, sans-serif;
-          line-height: 1.6;
-          color: #333;
-          background-color: #ffffff;
-          margin: 0;
-          padding: 20px;
-        }
-        .email-container {
-          max-width: 600px;
-          margin: 20px auto;
-          background: #ffffff;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          padding: 20px;
-        }
-        .email-header {
-          text-align: center;
-          margin-bottom: 20px;
-        }
-        .email-header h1 {
-          font-size: 20px;
-          color: #0056b3;
-        }
-        .email-body {
-          font-size: 14px;
-          color: #333;
-        }
-        .email-body p {
-          margin: 10px 0;
-        }
-        .email-footer {
-          margin-top: 20px;
-          font-size: 12px;
-          color: #555;
-          text-align: left;
-          border-top: 1px solid #ddd;
-          padding-top: 10px;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="email-container">
-        <div class="email-header">
-          <h1>Conforlab - Aviso de Visita Realizada</h1>
-        </div>
-        <div class="email-body">
-          <p>Prezado(a) <strong>${clientName || 'Cliente'}</strong>,</p>
-          <p>Informamos que nossa equipe técnica concluiu a visita ao local indicado. Agradecemos pela confiança em nossos serviços e reiteramos nosso compromisso com a excelência.</p>
-          <p><strong>Detalhes da Visita:</strong></p>
-          <p><strong>Local:</strong> ${location || 'Não especificado'}</p>
-          <p><strong>Data e Hora:</strong> ${formattedDateTime}</p>
-          <p><strong>Técnico:</strong> ${username || 'Não identificado'}</p>
-          <p>Este e-mail é automático e não requer resposta. Em caso de dúvidas, nossa equipe está à disposição para atendê-lo.</p>
-        </div>
-        <div class="email-footer">
-          <p>Atenciosamente,</p>
-          <p>Equipe Conforlab</p>
-          <p>[Informações de Contato]</p>
-        </div>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aviso de Visita Realizada</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.5;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      color: #333333;
+    }
+    .email-container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #ffffff;
+      border: 1px solid #dddddd;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    .email-header {
+      background-color: #0056b3;
+      color: #ffffff;
+      text-align: center;
+      padding: 20px;
+    }
+    .email-header h1 {
+      font-size: 22px;
+      margin: 0;
+    }
+    .email-body {
+      padding: 20px;
+    }
+    .email-body p {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    .email-body .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #0056b3;
+      margin-top: 20px;
+    }
+    .email-body .details {
+      margin: 10px 0 20px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border: 1px solid #dddddd;
+      border-radius: 4px;
+    }
+    .email-body .details p {
+      margin: 5px 0;
+      font-size: 15px;
+    }
+    .email-footer {
+      background-color: #f4f4f9;
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      color: #555555;
+    }
+    .email-footer p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <!-- Header -->
+    <div class="email-header">
+      <h1>Conforlab - Aviso de Visita</h1>
+    </div>
+
+    <!-- Body -->
+    <div class="email-body">
+      <p>Prezado(a) <strong>${clientName || 'Cliente'}</strong>,</p>
+      <p>Informamos que nossa equipe técnica concluiu a visita ao local indicado. Agradecemos pela confiança em nossos serviços e estamos à disposição para eventuais dúvidas ou necessidades futuras.</p>
+
+      <p class="section-title">Detalhes da Visita</p>
+      <div class="details">
+        <p><strong>Local:</strong> ${location || 'Não especificado'}</p>
+        <p><strong>Data e Hora:</strong> ${formattedDateTime}</p>
+        <p><strong>Técnico:</strong> ${username || 'Não identificado'}</p>
       </div>
-    </body>
-    </html>`;
+
+      <p>Este e-mail é automático e não requer resposta. Caso precise de suporte, entre em contato com nossa equipe através dos canais abaixo.</p>
+    </div>
+
+    <!-- Footer -->
+    <div class="email-footer">
+      <p>Atenciosamente,</p>
+      <p><strong>Equipe Conforlab</strong></p>
+      <p>📞 Telefone: (00) 1234-5678 | ✉️ E-mail: suporte@conforlab.com.br</p>
+      <p>🌐 Site: <a href="https://www.conforlab.com.br" style="color: #0056b3; text-decoration: none;">www.conforlab.com.br</a></p>
+    </div>
+  </div>
+</body>
+</html>`;
 
   try {
     for (const recipient of email) {
