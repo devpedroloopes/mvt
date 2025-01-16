@@ -48,7 +48,6 @@ app.post('/', async (req, res) => {
     body {
       font-family: Arial, sans-serif;
       line-height: 1.5;
-      background-color: #f4f4f9;
       margin: 0;
       padding: 0;
       color: #333333;
@@ -96,8 +95,13 @@ app.post('/', async (req, res) => {
       margin: 5px 0;
       font-size: 15px;
     }
+    .email-body .note {
+      font-size: 14px;
+      color: #888888; /* Cinza claro para menos destaque */
+      margin-top: 20px;
+      text-align: center;
+    }
     .email-footer {
-      background-color: #f4f4f9;
       text-align: center;
       padding: 15px;
       font-size: 14px;
@@ -127,7 +131,7 @@ app.post('/', async (req, res) => {
         <p><strong>Técnico:</strong> ${username || 'Não identificado'}</p>
       </div>
 
-      <p>Este e-mail é automático e não requer resposta. Caso precise de suporte, entre em contato com nossa equipe através dos canais abaixo.</p>
+      <p class="note">Este e-mail é gerado automaticamente. Por favor, não responda a esta mensagem.</p>
     </div>
 
     <!-- Footer -->
